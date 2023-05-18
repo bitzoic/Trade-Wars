@@ -8,6 +8,11 @@ export default mudConfig({
                 max_health: "uint256",
             },
         },
+        HealthRegen: {
+            schema: { 
+                last_update: "uint256", 
+            },
+        },
         FirePower: {
             schema: { 
                 power: "uint256", 

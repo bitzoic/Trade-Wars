@@ -21,6 +21,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    HealthRegen: (() => {
+      const tableId = new TableId("", "HealthRegen");
+      return defineComponent(
+        world,
+        {
+          last_update: RecsType.BigInt,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     FirePower: (() => {
       const tableId = new TableId("", "FirePower");
       return defineComponent(

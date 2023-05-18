@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Position, PositionData } from "../../codegen/Tables.sol";
+import { Position } from "../../codegen/Tables.sol";
 import { Speed } from "../../codegen/Tables.sol";
 import { CHUNK_SIZE } from "../../constants.sol";
 
@@ -37,6 +37,8 @@ contract MoveSystem is System {
         Position.setPos_x(keccak256(abi.encodePacked(msg.sender)), newPositionX);
         Position.setPos_y(keccak256(abi.encodePacked(msg.sender)), newPositionY);
         Position.setLast_update(keccak256(abi.encodePacked(msg.sender)), block.timestamp);
+
+        // TODO: Updates for when leaving the port
     }
 
     function sqrt(uint256 x) private pure returns (uint256) {
