@@ -43,6 +43,7 @@ export function defineContractComponents(world: World) {
         {
           power: RecsType.BigInt,
           rate: RecsType.BigInt,
+          last_update: RecsType.BigInt,
         },
         {
           metadata: {

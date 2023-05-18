@@ -23,14 +23,16 @@ bytes32 constant FirePowerTableId = _tableId;
 struct FirePowerData {
   uint256 power;
   uint256 rate;
+  uint256 last_update;
 }
 
 library FirePower {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
+    SchemaType[] memory _schema = new SchemaType[](3);
     _schema[0] = SchemaType.UINT256;
     _schema[1] = SchemaType.UINT256;
+    _schema[2] = SchemaType.UINT256;
 
     return SchemaLib.encode(_schema);
   }
@@ -44,9 +46,10 @@ library FirePower {
 
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](2);
+    string[] memory _fieldNames = new string[](3);
     _fieldNames[0] = "power";
     _fieldNames[1] = "rate";
+    _fieldNames[2] = "last_update";
     return ("FirePower", _fieldNames);
   }
 
@@ -140,6 +143,40 @@ library FirePower {
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((rate)));
   }
 
+  /** Get last_update */
+  function getLast_update(bytes32 key) internal view returns (uint256 last_update) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
+    return (uint256(Bytes.slice32(_blob, 0)));
+  }
+
+  /** Get last_update (using the specified store) */
+  function getLast_update(IStore _store, bytes32 key) internal view returns (uint256 last_update) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
+
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
+    return (uint256(Bytes.slice32(_blob, 0)));
+  }
+
+  /** Set last_update */
+  function setLast_update(bytes32 key, uint256 last_update) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
+
+    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((last_update)));
+  }
+
+  /** Set last_update (using the specified store) */
+  function setLast_update(IStore _store, bytes32 key, uint256 last_update) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
+
+    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((last_update)));
+  }
+
   /** Get the full data */
   function get(bytes32 key) internal view returns (FirePowerData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -159,8 +196,8 @@ library FirePower {
   }
 
   /** Set the full data using individual values */
-  function set(bytes32 key, uint256 power, uint256 rate) internal {
-    bytes memory _data = encode(power, rate);
+  function set(bytes32 key, uint256 power, uint256 rate, uint256 last_update) internal {
+    bytes memory _data = encode(power, rate, last_update);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
@@ -169,8 +206,8 @@ library FirePower {
   }
 
   /** Set the full data using individual values (using the specified store) */
-  function set(IStore _store, bytes32 key, uint256 power, uint256 rate) internal {
-    bytes memory _data = encode(power, rate);
+  function set(IStore _store, bytes32 key, uint256 power, uint256 rate, uint256 last_update) internal {
+    bytes memory _data = encode(power, rate, last_update);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
@@ -180,12 +217,12 @@ library FirePower {
 
   /** Set the full data using the data struct */
   function set(bytes32 key, FirePowerData memory _table) internal {
-    set(key, _table.power, _table.rate);
+    set(key, _table.power, _table.rate, _table.last_update);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, bytes32 key, FirePowerData memory _table) internal {
-    set(_store, key, _table.power, _table.rate);
+    set(_store, key, _table.power, _table.rate, _table.last_update);
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -193,11 +230,13 @@ library FirePower {
     _table.power = (uint256(Bytes.slice32(_blob, 0)));
 
     _table.rate = (uint256(Bytes.slice32(_blob, 32)));
+
+    _table.last_update = (uint256(Bytes.slice32(_blob, 64)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint256 power, uint256 rate) internal view returns (bytes memory) {
-    return abi.encodePacked(power, rate);
+  function encode(uint256 power, uint256 rate, uint256 last_update) internal view returns (bytes memory) {
+    return abi.encodePacked(power, rate, last_update);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

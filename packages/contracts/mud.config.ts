@@ -17,6 +17,7 @@ export default mudConfig({
             schema: { 
                 power: "uint256", 
                 rate: "uint256",
+                last_update: "uint256", 
             },
         },
         CargoSpace: {
