@@ -14,3 +14,5 @@ import { Spices, SpicesTableId } from "./tables/Spices.sol";
 import { Iron, IronTableId } from "./tables/Iron.sol";
 import { Sugar, SugarTableId } from "./tables/Sugar.sol";
 import { Coins, CoinsTableId } from "./tables/Coins.sol";
+import { LPTokens, LPTokensTableId } from "./tables/LPTokens.sol";
+import { Ports, PortsData, PortsTableId } from "./tables/Ports.sol";

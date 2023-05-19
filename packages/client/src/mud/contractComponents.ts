@@ -178,5 +178,24 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    Ports: (() => {
+      const tableId = new TableId("", "Ports");
+      return defineComponent(
+        world,
+        {
+          port_id: RecsType.BigInt,
+          port_name: RecsType.String,
+          port_type: RecsType.String,
+          port_owner: RecsType.String,
+          port_pos_x: RecsType.BigInt,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }

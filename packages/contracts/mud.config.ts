@@ -1,6 +1,12 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
+    systems:{
+        TradeMultiAssetSystem: {
+            name: "TradeMultiAssetSystem",
+            openAccess: true,
+        },
+    },
   tables: {
         Health: {
             schema: { 
@@ -65,5 +71,22 @@ export default mudConfig({
                 amount: "uint256", 
             },
         },
+        LPTokens: {
+            keySchema: {
+                owner: "bytes32",
+            },
+            schema: { 
+                amount: "uint256", 
+            },
+        },
+        Ports: {
+            schema: {
+                port_id: "uint256",
+                port_name: "string",
+                port_type: "string",
+                port_owner: "string",
+                port_pos_x: "uint256",
+            }
+        }
     },
 });
