@@ -9,7 +9,7 @@ uint256 constant FIRE_RATE_COST = 700;
 uint256 constant CARGO_COST = 400;
 uint256 constant HEALTH_COST = 300;
 
-uint256 constant price = 50;
+uint256 constant AMM_FEE = 50;
 
 // Materials
 uint256 constant IRON_WEIGHT = 100;

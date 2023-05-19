@@ -2,8 +2,8 @@ import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
     systems:{
-        TradeMultiAssetSystem: {
-            name: "TradeMultiAssetSystem",
+        Port: {
+            name: "TradeSystem",
             openAccess: true,
         },
     },

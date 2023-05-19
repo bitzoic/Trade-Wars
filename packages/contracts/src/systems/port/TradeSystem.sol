@@ -37,7 +37,6 @@ contract TradeSugarSystem is System {
         uint256 ratio = poolAmountOut * SCALE / totalLiquidity;
         for (uint i = 0; i<4; i++ ){
             uint256 maxAmountIn = maxAmount[i];
-            uint256 tokenAmount = amount[i];
             if (i == 0) {
                 uint256 bal = Coins.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
@@ -82,7 +81,6 @@ contract TradeSugarSystem is System {
         LPToken.set(shipId, LPToken.get(shipId) - amount);
         uint256 ratio = poolAmountOut * SCALE / totalLiquidity;
         for (uint256 i = 0; i < 4; i++) {
-            address asset = assets[i];
             if (i == 0) {
                 uint256 bal = Coins.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
@@ -161,8 +159,8 @@ contract TradeSugarSystem is System {
         uint256 balanceA = getBalance(item0, portId);
         uint256 balanceB = getBalance(item1, portId);
         uint256 weightA = getNormalizedWeight(item1, portId);
-        uint256 weightA =  getNormalizedWeight(item0, portId);
-        return (balanceA * weightB) / (balanceB * weightA);
+        uint256 weightB =  getNormalizedWeight(item0, portId);
+        return ((balanceA * weightB / balanceB) * amount) / weightA  ;
 
     }
 
