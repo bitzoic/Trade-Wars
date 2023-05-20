@@ -198,11 +198,10 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          port_id: RecsType.BigInt,
-          port_name: RecsType.String,
-          port_type: RecsType.String,
           port_owner: RecsType.String,
-          port_pos_x: RecsType.BigInt,
+          port_name: RecsType.String,
+          port_speeds: RecsType.BigIntArray,
+          last_updated: RecsType.BigInt,
         },
         {
           metadata: {

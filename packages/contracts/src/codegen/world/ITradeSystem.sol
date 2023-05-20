@@ -6,13 +6,13 @@ pragma solidity >=0.8.0;
 import { Items } from "./../../constants.sol";
 
 interface ITradeSystem {
-  function buyWithCoins(uint256 amount, uint256 portId, Items item) external;
+  function buyWithCoins(uint256 amount, bytes32 portId, Items item) external;
 
-  function sellForCoins(uint256 amount, uint256 portId, Items item) external;
+  function sellForCoins(uint256 amount, bytes32 portId, Items item) external;
 
-  function swap(uint256 amount, uint256 portId_, Items item0, Items item1) external;
+  function swap(uint256 amount, bytes32 portId, Items item0, Items item1) external returns (uint256);
 
-  function joinPool(uint256 portId_, uint256 poolAmountOut, uint256[5] calldata maxAmount) external returns (uint256);
+  function joinPool(bytes32 portId, uint256 poolAmountOut, uint256[5] calldata maxAmount) external returns (uint256);
 
   function exitPool(uint256 portId_, uint256 amount) external returns (uint256);
 

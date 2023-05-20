@@ -6,6 +6,7 @@ pragma solidity >=0.8.0;
 import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
 
 import { IHealthRegenSystem } from "./IHealthRegenSystem.sol";
+import { IPortSystem } from "./IPortSystem.sol";
 import { ITradeSystem } from "./ITradeSystem.sol";
 import { IUpgradeSystem } from "./IUpgradeSystem.sol";
 import { IAttackSystem } from "./IAttackSystem.sol";
@@ -15,6 +16,14 @@ import { IMoveSystem } from "./IMoveSystem.sol";
  * The IWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IWorld is IBaseWorld, IHealthRegenSystem, ITradeSystem, IUpgradeSystem, IAttackSystem, IMoveSystem {
+interface IWorld is
+  IBaseWorld,
+  IHealthRegenSystem,
+  IPortSystem,
+  ITradeSystem,
+  IUpgradeSystem,
+  IAttackSystem,
+  IMoveSystem
+{
 
 }

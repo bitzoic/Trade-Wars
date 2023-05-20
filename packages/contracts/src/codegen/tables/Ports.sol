@@ -21,22 +21,20 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Ports
 bytes32 constant PortsTableId = _tableId;
 
 struct PortsData {
-  uint256 port_id;
+  address port_owner;
   string port_name;
-  string port_type;
-  string port_owner;
-  uint256 port_pos_x;
+  uint256[5] port_speeds;
+  uint256 last_updated;
 }
 
 library Ports {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](5);
-    _schema[0] = SchemaType.UINT256;
+    SchemaType[] memory _schema = new SchemaType[](4);
+    _schema[0] = SchemaType.ADDRESS;
     _schema[1] = SchemaType.STRING;
-    _schema[2] = SchemaType.STRING;
-    _schema[3] = SchemaType.STRING;
-    _schema[4] = SchemaType.UINT256;
+    _schema[2] = SchemaType.UINT256_ARRAY;
+    _schema[3] = SchemaType.UINT256;
 
     return SchemaLib.encode(_schema);
   }
@@ -50,12 +48,11 @@ library Ports {
 
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](5);
-    _fieldNames[0] = "port_id";
+    string[] memory _fieldNames = new string[](4);
+    _fieldNames[0] = "port_owner";
     _fieldNames[1] = "port_name";
-    _fieldNames[2] = "port_type";
-    _fieldNames[3] = "port_owner";
-    _fieldNames[4] = "port_pos_x";
+    _fieldNames[2] = "port_speeds";
+    _fieldNames[3] = "last_updated";
     return ("Ports", _fieldNames);
   }
 
@@ -81,441 +78,323 @@ library Ports {
     _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get port_id */
-  function getPort_id(bytes32 key) internal view returns (uint256 port_id) {
+  /** Get port_owner */
+  function getPort_owner(bytes32 port_id) internal view returns (address port_owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Get port_id (using the specified store) */
-  function getPort_id(IStore _store, bytes32 key) internal view returns (uint256 port_id) {
+  /** Get port_owner (using the specified store) */
+  function getPort_owner(IStore _store, bytes32 port_id) internal view returns (address port_owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Set port_id */
-  function setPort_id(bytes32 key, uint256 port_id) internal {
+  /** Set port_owner */
+  function setPort_owner(bytes32 port_id, address port_owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((port_id)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((port_owner)));
   }
 
-  /** Set port_id (using the specified store) */
-  function setPort_id(IStore _store, bytes32 key, uint256 port_id) internal {
+  /** Set port_owner (using the specified store) */
+  function setPort_owner(IStore _store, bytes32 port_id, address port_owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((port_id)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((port_owner)));
   }
 
   /** Get port_name */
-  function getPort_name(bytes32 key) internal view returns (string memory port_name) {
+  function getPort_name(bytes32 port_id) internal view returns (string memory port_name) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
 
   /** Get port_name (using the specified store) */
-  function getPort_name(IStore _store, bytes32 key) internal view returns (string memory port_name) {
+  function getPort_name(IStore _store, bytes32 port_id) internal view returns (string memory port_name) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
 
   /** Set port_name */
-  function setPort_name(bytes32 key, string memory port_name) internal {
+  function setPort_name(bytes32 port_id, string memory port_name) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, bytes((port_name)));
   }
 
   /** Set port_name (using the specified store) */
-  function setPort_name(IStore _store, bytes32 key, string memory port_name) internal {
+  function setPort_name(IStore _store, bytes32 port_id, string memory port_name) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     _store.setField(_tableId, _keyTuple, 1, bytes((port_name)));
   }
 
   /** Get the length of port_name */
-  function lengthPort_name(bytes32 key) internal view returns (uint256) {
+  function lengthPort_name(bytes32 port_id) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
     return _byteLength / 1;
   }
 
   /** Get the length of port_name (using the specified store) */
-  function lengthPort_name(IStore _store, bytes32 key) internal view returns (uint256) {
+  function lengthPort_name(IStore _store, bytes32 port_id) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
     return _byteLength / 1;
   }
 
   /** Get an item of port_name (unchecked, returns invalid data if index overflows) */
-  function getItemPort_name(bytes32 key, uint256 _index) internal view returns (string memory) {
+  function getItemPort_name(bytes32 port_id, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
     return (string(_blob));
   }
 
   /** Get an item of port_name (using the specified store) (unchecked, returns invalid data if index overflows) */
-  function getItemPort_name(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
+  function getItemPort_name(IStore _store, bytes32 port_id, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
     return (string(_blob));
   }
 
   /** Push a slice to port_name */
-  function pushPort_name(bytes32 key, string memory _slice) internal {
+  function pushPort_name(bytes32 port_id, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Push a slice to port_name (using the specified store) */
-  function pushPort_name(IStore _store, bytes32 key, string memory _slice) internal {
+  function pushPort_name(IStore _store, bytes32 port_id, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     _store.pushToField(_tableId, _keyTuple, 1, bytes((_slice)));
   }
 
   /** Pop a slice from port_name */
-  function popPort_name(bytes32 key) internal {
+  function popPort_name(bytes32 port_id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 1, 1);
   }
 
   /** Pop a slice from port_name (using the specified store) */
-  function popPort_name(IStore _store, bytes32 key) internal {
+  function popPort_name(IStore _store, bytes32 port_id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     _store.popFromField(_tableId, _keyTuple, 1, 1);
   }
 
   /** Update a slice of port_name at `_index` */
-  function updatePort_name(bytes32 key, uint256 _index, string memory _slice) internal {
+  function updatePort_name(bytes32 port_id, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
   }
 
   /** Update a slice of port_name (using the specified store) at `_index` */
-  function updatePort_name(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
+  function updatePort_name(IStore _store, bytes32 port_id, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
   }
 
-  /** Get port_type */
-  function getPort_type(bytes32 key) internal view returns (string memory port_type) {
+  /** Get port_speeds */
+  function getPort_speeds(bytes32 port_id) internal view returns (uint256[5] memory port_speeds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
-    return (string(_blob));
+    return toStaticArray_uint256_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
   }
 
-  /** Get port_type (using the specified store) */
-  function getPort_type(IStore _store, bytes32 key) internal view returns (string memory port_type) {
+  /** Get port_speeds (using the specified store) */
+  function getPort_speeds(IStore _store, bytes32 port_id) internal view returns (uint256[5] memory port_speeds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
-    return (string(_blob));
+    return toStaticArray_uint256_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
   }
 
-  /** Set port_type */
-  function setPort_type(bytes32 key, string memory port_type) internal {
+  /** Set port_speeds */
+  function setPort_speeds(bytes32 port_id, uint256[5] memory port_speeds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, bytes((port_type)));
+    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint256_5(port_speeds)));
   }
 
-  /** Set port_type (using the specified store) */
-  function setPort_type(IStore _store, bytes32 key, string memory port_type) internal {
+  /** Set port_speeds (using the specified store) */
+  function setPort_speeds(IStore _store, bytes32 port_id, uint256[5] memory port_speeds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    _store.setField(_tableId, _keyTuple, 2, bytes((port_type)));
+    _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint256_5(port_speeds)));
   }
 
-  /** Get the length of port_type */
-  function lengthPort_type(bytes32 key) internal view returns (uint256) {
+  /** Get the length of port_speeds */
+  function lengthPort_speeds(bytes32 port_id) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 1;
+    return _byteLength / 32;
   }
 
-  /** Get the length of port_type (using the specified store) */
-  function lengthPort_type(IStore _store, bytes32 key) internal view returns (uint256) {
+  /** Get the length of port_speeds (using the specified store) */
+  function lengthPort_speeds(IStore _store, bytes32 port_id) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 1;
+    return _byteLength / 32;
   }
 
-  /** Get an item of port_type (unchecked, returns invalid data if index overflows) */
-  function getItemPort_type(bytes32 key, uint256 _index) internal view returns (string memory) {
+  /** Get an item of port_speeds (unchecked, returns invalid data if index overflows) */
+  function getItemPort_speeds(bytes32 port_id, uint256 _index) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
+    return (uint256(Bytes.slice32(_blob, 0)));
   }
 
-  /** Get an item of port_type (using the specified store) (unchecked, returns invalid data if index overflows) */
-  function getItemPort_type(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
+  /** Get an item of port_speeds (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemPort_speeds(IStore _store, bytes32 port_id, uint256 _index) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
+    return (uint256(Bytes.slice32(_blob, 0)));
   }
 
-  /** Push a slice to port_type */
-  function pushPort_type(bytes32 key, string memory _slice) internal {
+  /** Push an element to port_speeds */
+  function pushPort_speeds(bytes32 port_id, uint256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 2, bytes((_slice)));
+    StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
-  /** Push a slice to port_type (using the specified store) */
-  function pushPort_type(IStore _store, bytes32 key, string memory _slice) internal {
+  /** Push an element to port_speeds (using the specified store) */
+  function pushPort_speeds(IStore _store, bytes32 port_id, uint256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    _store.pushToField(_tableId, _keyTuple, 2, bytes((_slice)));
+    _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
-  /** Pop a slice from port_type */
-  function popPort_type(bytes32 key) internal {
+  /** Pop an element from port_speeds */
+  function popPort_speeds(bytes32 port_id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 2, 1);
+    StoreSwitch.popFromField(_tableId, _keyTuple, 2, 32);
   }
 
-  /** Pop a slice from port_type (using the specified store) */
-  function popPort_type(IStore _store, bytes32 key) internal {
+  /** Pop an element from port_speeds (using the specified store) */
+  function popPort_speeds(IStore _store, bytes32 port_id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    _store.popFromField(_tableId, _keyTuple, 2, 1);
+    _store.popFromField(_tableId, _keyTuple, 2, 32);
   }
 
-  /** Update a slice of port_type at `_index` */
-  function updatePort_type(bytes32 key, uint256 _index, string memory _slice) internal {
+  /** Update an element of port_speeds at `_index` */
+  function updatePort_speeds(bytes32 port_id, uint256 _index, uint256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)));
+    StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
   }
 
-  /** Update a slice of port_type (using the specified store) at `_index` */
-  function updatePort_type(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
+  /** Update an element of port_speeds (using the specified store) at `_index` */
+  function updatePort_speeds(IStore _store, bytes32 port_id, uint256 _index, uint256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    _store.updateInField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)));
+    _store.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
   }
 
-  /** Get port_owner */
-  function getPort_owner(bytes32 key) internal view returns (string memory port_owner) {
+  /** Get last_updated */
+  function getLast_updated(bytes32 port_id) internal view returns (uint256 last_updated) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
-    return (string(_blob));
+    return (uint256(Bytes.slice32(_blob, 0)));
   }
 
-  /** Get port_owner (using the specified store) */
-  function getPort_owner(IStore _store, bytes32 key) internal view returns (string memory port_owner) {
+  /** Get last_updated (using the specified store) */
+  function getLast_updated(IStore _store, bytes32 port_id) internal view returns (uint256 last_updated) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 3);
-    return (string(_blob));
-  }
-
-  /** Set port_owner */
-  function setPort_owner(bytes32 key, string memory port_owner) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((port_owner)));
-  }
-
-  /** Set port_owner (using the specified store) */
-  function setPort_owner(IStore _store, bytes32 key, string memory port_owner) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    _store.setField(_tableId, _keyTuple, 3, bytes((port_owner)));
-  }
-
-  /** Get the length of port_owner */
-  function lengthPort_owner(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 1;
-  }
-
-  /** Get the length of port_owner (using the specified store) */
-  function lengthPort_owner(IStore _store, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 1;
-  }
-
-  /** Get an item of port_owner (unchecked, returns invalid data if index overflows) */
-  function getItemPort_owner(bytes32 key, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
-  }
-
-  /** Get an item of port_owner (using the specified store) (unchecked, returns invalid data if index overflows) */
-  function getItemPort_owner(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
-  }
-
-  /** Push a slice to port_owner */
-  function pushPort_owner(bytes32 key, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)));
-  }
-
-  /** Push a slice to port_owner (using the specified store) */
-  function pushPort_owner(IStore _store, bytes32 key, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    _store.pushToField(_tableId, _keyTuple, 3, bytes((_slice)));
-  }
-
-  /** Pop a slice from port_owner */
-  function popPort_owner(bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1);
-  }
-
-  /** Pop a slice from port_owner (using the specified store) */
-  function popPort_owner(IStore _store, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    _store.popFromField(_tableId, _keyTuple, 3, 1);
-  }
-
-  /** Update a slice of port_owner at `_index` */
-  function updatePort_owner(bytes32 key, uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
-  }
-
-  /** Update a slice of port_owner (using the specified store) at `_index` */
-  function updatePort_owner(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
-  }
-
-  /** Get port_pos_x */
-  function getPort_pos_x(bytes32 key) internal view returns (uint256 port_pos_x) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4);
     return (uint256(Bytes.slice32(_blob, 0)));
   }
 
-  /** Get port_pos_x (using the specified store) */
-  function getPort_pos_x(IStore _store, bytes32 key) internal view returns (uint256 port_pos_x) {
+  /** Set last_updated */
+  function setLast_updated(bytes32 port_id, uint256 last_updated) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 4);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    StoreSwitch.setField(_tableId, _keyTuple, 3, abi.encodePacked((last_updated)));
   }
 
-  /** Set port_pos_x */
-  function setPort_pos_x(bytes32 key, uint256 port_pos_x) internal {
+  /** Set last_updated (using the specified store) */
+  function setLast_updated(IStore _store, bytes32 port_id, uint256 last_updated) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 4, abi.encodePacked((port_pos_x)));
-  }
-
-  /** Set port_pos_x (using the specified store) */
-  function setPort_pos_x(IStore _store, bytes32 key, uint256 port_pos_x) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
-
-    _store.setField(_tableId, _keyTuple, 4, abi.encodePacked((port_pos_x)));
+    _store.setField(_tableId, _keyTuple, 3, abi.encodePacked((last_updated)));
   }
 
   /** Get the full data */
-  function get(bytes32 key) internal view returns (PortsData memory _table) {
+  function get(bytes32 port_id) internal view returns (PortsData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 key) internal view returns (PortsData memory _table) {
+  function get(IStore _store, bytes32 port_id) internal view returns (PortsData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -523,17 +402,16 @@ library Ports {
 
   /** Set the full data using individual values */
   function set(
-    bytes32 key,
-    uint256 port_id,
+    bytes32 port_id,
+    address port_owner,
     string memory port_name,
-    string memory port_type,
-    string memory port_owner,
-    uint256 port_pos_x
+    uint256[5] memory port_speeds,
+    uint256 last_updated
   ) internal {
-    bytes memory _data = encode(port_id, port_name, port_type, port_owner, port_pos_x);
+    bytes memory _data = encode(port_owner, port_name, port_speeds, last_updated);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
@@ -541,45 +419,44 @@ library Ports {
   /** Set the full data using individual values (using the specified store) */
   function set(
     IStore _store,
-    bytes32 key,
-    uint256 port_id,
+    bytes32 port_id,
+    address port_owner,
     string memory port_name,
-    string memory port_type,
-    string memory port_owner,
-    uint256 port_pos_x
+    uint256[5] memory port_speeds,
+    uint256 last_updated
   ) internal {
-    bytes memory _data = encode(port_id, port_name, port_type, port_owner, port_pos_x);
+    bytes memory _data = encode(port_owner, port_name, port_speeds, last_updated);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     _store.setRecord(_tableId, _keyTuple, _data);
   }
 
   /** Set the full data using the data struct */
-  function set(bytes32 key, PortsData memory _table) internal {
-    set(key, _table.port_id, _table.port_name, _table.port_type, _table.port_owner, _table.port_pos_x);
+  function set(bytes32 port_id, PortsData memory _table) internal {
+    set(port_id, _table.port_owner, _table.port_name, _table.port_speeds, _table.last_updated);
   }
 
   /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 key, PortsData memory _table) internal {
-    set(_store, key, _table.port_id, _table.port_name, _table.port_type, _table.port_owner, _table.port_pos_x);
+  function set(IStore _store, bytes32 port_id, PortsData memory _table) internal {
+    set(_store, port_id, _table.port_owner, _table.port_name, _table.port_speeds, _table.last_updated);
   }
 
   /** Decode the tightly packed blob using this table's schema */
   function decode(bytes memory _blob) internal view returns (PortsData memory _table) {
-    // 64 is the total byte length of static data
-    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 64));
+    // 52 is the total byte length of static data
+    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 52));
 
-    _table.port_id = (uint256(Bytes.slice32(_blob, 0)));
+    _table.port_owner = (address(Bytes.slice20(_blob, 0)));
 
-    _table.port_pos_x = (uint256(Bytes.slice32(_blob, 32)));
+    _table.last_updated = (uint256(Bytes.slice32(_blob, 20)));
 
     // Store trims the blob if dynamic fields are all empty
-    if (_blob.length > 64) {
+    if (_blob.length > 52) {
       uint256 _start;
       // skip static data length + dynamic lengths word
-      uint256 _end = 96;
+      uint256 _end = 84;
 
       _start = _end;
       _end += _encodedLengths.atIndex(0);
@@ -587,58 +464,69 @@ library Ports {
 
       _start = _end;
       _end += _encodedLengths.atIndex(1);
-      _table.port_type = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-
-      _start = _end;
-      _end += _encodedLengths.atIndex(2);
-      _table.port_owner = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+      _table.port_speeds = toStaticArray_uint256_5(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint256());
     }
   }
 
   /** Tightly pack full data using this table's schema */
   function encode(
-    uint256 port_id,
+    address port_owner,
     string memory port_name,
-    string memory port_type,
-    string memory port_owner,
-    uint256 port_pos_x
+    uint256[5] memory port_speeds,
+    uint256 last_updated
   ) internal view returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](3);
+    uint40[] memory _counters = new uint40[](2);
     _counters[0] = uint40(bytes(port_name).length);
-    _counters[1] = uint40(bytes(port_type).length);
-    _counters[2] = uint40(bytes(port_owner).length);
+    _counters[1] = uint40(port_speeds.length * 32);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return
       abi.encodePacked(
-        port_id,
-        port_pos_x,
+        port_owner,
+        last_updated,
         _encodedLengths.unwrap(),
         bytes((port_name)),
-        bytes((port_type)),
-        bytes((port_owner))
+        EncodeArray.encode(fromStaticArray_uint256_5(port_speeds))
       );
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _keyTuple) {
+  function encodeKeyTuple(bytes32 port_id) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 key) internal {
+  function deleteRecord(bytes32 port_id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 key) internal {
+  function deleteRecord(IStore _store, bytes32 port_id) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = bytes32((port_id));
 
     _store.deleteRecord(_tableId, _keyTuple);
   }
+}
+
+function toStaticArray_uint256_5(uint256[] memory _value) pure returns (uint256[5] memory _result) {
+  // in memory static arrays are just dynamic arrays without the length byte
+  assembly {
+    _result := add(_value, 0x20)
+  }
+}
+
+function fromStaticArray_uint256_5(uint256[5] memory _value) view returns (uint256[] memory _result) {
+  _result = new uint256[](5);
+  uint256 fromPointer;
+  uint256 toPointer;
+  assembly {
+    fromPointer := _value
+    toPointer := add(_result, 0x20)
+  }
+  Memory.copy(fromPointer, toPointer, 160);
 }

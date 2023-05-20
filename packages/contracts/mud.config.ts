@@ -1,12 +1,16 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-  //   systems: {
-  //     TradeSystem: {
-  //       name: "trading",
-  //       openAccess: true,
-  //     },
-  //   },
+  systems: {
+    TradeSystem: {
+      name: "trading",
+      openAccess: true,
+    },
+    PortSystem: {
+      name: "port",
+      openAccess: true,
+    },
+  },
   tables: {
     Health: {
       schema: {
@@ -81,12 +85,14 @@ export default mudConfig({
       },
     },
     Ports: {
+      keySchema: {
+        port_id: "bytes32",
+      },
       schema: {
-        port_id: "uint256",
+        port_owner: "address",
         port_name: "string",
-        port_type: "string",
-        port_owner: "string",
-        port_pos_x: "uint256",
+        port_speeds: "uint256[5]",
+        last_updated: "uint256",
       },
     },
   },

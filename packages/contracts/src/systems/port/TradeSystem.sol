@@ -3,6 +3,8 @@ pragma solidity >=0.8.0;
 
 import {System} from "@latticexyz/world/src/System.sol";
 import {Position, Sugar, Iron, Spices, Salt, Coins, CargoSpace, LPTokens, Ports} from "../../codegen/Tables.sol";
+import {IWorld} from "../../codegen/world/IWorld.sol";
+
 import {Speed} from "../../codegen/Tables.sol";
 import {
     CHUNK_SIZE,
@@ -16,17 +18,20 @@ import {
 } from "../../constants.sol";
 
 contract TradeSystem is System {
-    function buyWithCoins(uint256 amount, uint256 portId, Items item) public {
+    function buyWithCoins(uint256 amount, bytes32 portId, Items item) public {
         swap(amount, portId, item, Items.COINS);
     }
 
-    function sellForCoins(uint256 amount, uint256 portId, Items item) public {
+    function sellForCoins(uint256 amount, bytes32 portId, Items item) public {
         swap(amount, portId, Items.COINS, item);
     }
 
-    function swap(uint256 amount, uint256 portId_, Items item0, Items item1) public {
+    function swap(uint256 amount, bytes32 portId, Items item0, Items item1)
+        public
+        manufacture(portId)
+        returns (uint256)
+    {
         bytes32 shipId = keccak256(abi.encodePacked(_msgSender()));
-        bytes32 portId = bytes32(portId_);
         require(checkValidLocation(shipId, portId), "Not in the same chunk as port");
 
         uint256 outputAmount = (quoteToken(amount, portId, item0, item1) * (SCALE - AMM_FEE)) / SCALE;
@@ -34,13 +39,18 @@ contract TradeSystem is System {
         setWeight(shipId, amount, outputAmount, item0, item1);
         transferToken(shipId, portId, item0, amount, true);
         transferToken(shipId, portId, item1, outputAmount, false);
+        return outputAmount;
     }
 
-    function joinPool(uint256 portId_, uint256 poolAmountOut, uint256[5] calldata maxAmount) public returns (uint256) {
+    function joinPool(bytes32 portId, uint256 poolAmountOut, uint256[5] calldata maxAmount)
+        public
+        manufacture(portId)
+        returns (uint256)
+    {
         bytes32 shipId = keccak256(abi.encodePacked(_msgSender()));
-        bytes32 portId = bytes32(portId_);
         require(checkValidLocation(shipId, portId), "Not in the same chunk as port");
         uint256 totalLiquidity = LPTokens.get(portId);
+        uint256 weight_ = CargoSpace.getCargo(shipId);
         uint256 ratio;
         if (totalLiquidity == 0) {
             // init pool liquidity
@@ -59,34 +69,39 @@ contract TradeSystem is System {
                 uint256 bal = Sugar.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
                 require(tokenAmountIn <= maxAmountIn, "ERR_MAX_AMOUNT");
+                weight_ -= tokenAmountIn * SUGAR_WEIGHT;
                 transferToken(shipId, portId, Items.SUGAR, tokenAmountIn, false);
             } else if (i == 2) {
                 uint256 bal = Iron.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
                 require(tokenAmountIn <= maxAmountIn, "ERR_MAX_AMOUNT");
+                weight_ -= tokenAmountIn * IRON_WEIGHT;
                 transferToken(shipId, portId, Items.IRON, tokenAmountIn, false);
             } else if (i == 3) {
                 uint256 bal = Spices.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
                 require(tokenAmountIn <= maxAmountIn, "ERR_MAX_AMOUNT");
+                weight_ -= tokenAmountIn * SPICES_WEIGHT;
                 transferToken(shipId, portId, Items.SPICES, tokenAmountIn, false);
             } else if (i == 4) {
                 uint256 bal = Salt.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
                 require(tokenAmountIn <= maxAmountIn, "ERR_MAX_AMOUNT");
+                weight_ -= tokenAmountIn * SALT_WEIGHT;
                 transferToken(shipId, portId, Items.SALT, tokenAmountIn, false);
             }
         }
         LPTokens.set(portId, totalLiquidity + poolAmountOut); // For recordkeeping
         LPTokens.set(shipId, LPTokens.get(shipId) + poolAmountOut);
-
+        CargoSpace.setCargo(shipId, weight_);
         return poolAmountOut;
     }
 
     function exitPool(uint256 portId_, uint256 amount) public returns (uint256) {
         bytes32 portId = bytes32(portId_);
-        uint256 totalLiquidity = LPTokens.get(portId);
         bytes32 shipId = keccak256(abi.encodePacked(_msgSender()));
+        uint256 weight_ = CargoSpace.getCargo(shipId);
+        uint256 totalLiquidity = LPTokens.get(portId);
         require(checkValidLocation(shipId, portId), "ERR_INVALID_LOCATION");
         uint256 poolAmountOut = (amount * totalLiquidity) / LPTokens.get(shipId);
         require(poolAmountOut > 0, "ERR_ZERO_AMOUNT");
@@ -101,21 +116,27 @@ contract TradeSystem is System {
             } else if (i == 1) {
                 uint256 bal = Sugar.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
+                weight_ += tokenAmountIn * SUGAR_WEIGHT;
                 transferToken(shipId, portId, Items.SUGAR, tokenAmountIn, true);
             } else if (i == 2) {
                 uint256 bal = Iron.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
+                weight_ += tokenAmountIn * IRON_WEIGHT;
                 transferToken(shipId, portId, Items.IRON, tokenAmountIn, true);
             } else if (i == 3) {
                 uint256 bal = Spices.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
+                weight_ += tokenAmountIn * SPICES_WEIGHT;
                 transferToken(shipId, portId, Items.SPICES, tokenAmountIn, true);
             } else if (i == 4) {
                 uint256 bal = Salt.get(portId);
                 uint256 tokenAmountIn = (bal * ratio) / SCALE;
+                weight_ += tokenAmountIn * SALT_WEIGHT;
                 transferToken(shipId, portId, Items.SALT, tokenAmountIn, true);
             }
         }
+        require(weight_ <= CargoSpace.getMax_cargo(shipId), "ERR_CARGO_FULL");
+        CargoSpace.setCargo(shipId, weight_);
         return amount;
     }
 
@@ -149,22 +170,21 @@ contract TradeSystem is System {
             Sugar.set(sender, current - amount);
             Sugar.set(receiver, Sugar.get(receiver) + amount);
         } else if (item == 2) {
-            uint256 current = Spices.get(sender);
-            if (current < amount) revert("Not enough spices");
-            Spices.set(sender, current - amount);
-            Spices.set(receiver, Spices.get(receiver) + amount);
-        } else if (item == 3) {
-            uint256 current = Salt.get(sender);
-            if (current < amount) revert("Not enough salt");
-            Salt.set(sender, current - amount);
-            Salt.set(receiver, Salt.get(receiver) + amount);
-        } else if (item == 4) {
             uint256 current = Iron.get(sender);
             if (current < amount) revert("Not enough iron");
             Iron.set(sender, current - amount);
             Iron.set(receiver, Iron.get(receiver) + amount);
+        } else if (item == 3) {
+            uint256 current = Spices.get(sender);
+            if (current < amount) revert("Not enough spices");
+            Spices.set(sender, current - amount);
+            Spices.set(receiver, Spices.get(receiver) + amount);
+        } else if (item == 4) {
+            uint256 current = Salt.get(sender);
+            if (current < amount) revert("Not enough salt");
+            Salt.set(sender, current - amount);
+            Salt.set(receiver, Salt.get(receiver) + amount);
         }
-
         // emit an event here?
     }
 
@@ -184,11 +204,11 @@ contract TradeSystem is System {
         } else if (item == 1) {
             weight = Sugar.get(portId);
         } else if (item == 2) {
-            weight = Spices.get(portId);
-        } else if (item == 3) {
-            weight = Salt.get(portId);
-        } else if (item == 4) {
             weight = Iron.get(portId);
+        } else if (item == 3) {
+            weight = Spices.get(portId);
+        } else if (item == 4) {
+            weight = Salt.get(portId);
         }
         return (weight * SCALE) / getTotalValue(portId);
     }
@@ -225,7 +245,7 @@ contract TradeSystem is System {
             weight -= amountOut * SALT_WEIGHT;
         }
         CargoSpace.setCargo(shipId, weight);
-        if (weight > CargoSpace.getCargo(shipId)) revert("Not enough cargo space");
+        if (weight > CargoSpace.getMax_cargo(shipId)) revert("Not enough cargo space");
     }
 
     function getBalance(Items item_, bytes32 entity) public view returns (uint256 balance) {
@@ -235,11 +255,16 @@ contract TradeSystem is System {
         } else if (item == 1) {
             balance = Sugar.get(entity);
         } else if (item == 2) {
-            balance = Spices.get(entity);
-        } else if (item == 3) {
-            balance = Salt.get(entity);
-        } else if (item == 4) {
             balance = Iron.get(entity);
+        } else if (item == 3) {
+            balance = Spices.get(entity);
+        } else if (item == 4) {
+            balance = Salt.get(entity);
         }
+    }
+
+    modifier manufacture(bytes32 portId) {
+        IWorld(_world()).manufacture(portId);
+        _;
     }
 }

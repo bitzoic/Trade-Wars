@@ -19,8 +19,8 @@ uint256 constant SALT_WEIGHT = 30;
 
 enum Items {
     COINS,
-    IRON,
     SUGAR,
+    IRON,
     SPICES,
     SALT
 }
