@@ -4,6 +4,8 @@ pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Position, FirePower, Health } from "../../codegen/Tables.sol";
 import { CHUNK_SIZE } from "../../constants.sol";
+//import { IWorld } from "../../codegen/world/IWorld.sol";
+import { PORT } from "../world/terrainPrimitives.sol";
 
 contract AttackSystem is System {
 
@@ -22,6 +24,8 @@ contract AttackSystem is System {
         require(currentChunkX == otherPlayerChunkX && currentChunkY == otherPlayerChunkY, "Not within firing distance");
 
         // TODO: Make sure not in port
+        // uint256 worldObject = IWorld(_world()).getObject(currentPositionX, currentPositionY);
+        // require(worldObject != PORT, "Cannot attack in port");
 
         uint256 lastFire = FirePower.getLast_update(keccak256(abi.encodePacked(msg.sender)));
         uint256 fireRate = FirePower.getRate(keccak256(abi.encodePacked(msg.sender)));
