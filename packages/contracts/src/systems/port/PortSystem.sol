@@ -22,6 +22,7 @@ contract PortSystem is System {
         Iron.set(portId, amounts[2]);
         Spices.set(portId, amounts[3]);
         Salt.set(portId, amounts[4]);
+        IWorld(_world()).joinPool(portId, 100, amounts);
     }
 
     function initPort(uint256 xCoord, uint256 yCoord, uint256[5] calldata amounts, uint256[5] calldata speeds) public {

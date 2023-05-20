@@ -5,6 +5,57 @@ import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 
 export function defineContractComponents(world: World) {
   return {
+    SwapExecuted: (() => {
+      const tableId = new TableId("", "SwapExecuted");
+      return defineComponent(
+        world,
+        {
+          receiver: RecsType.String,
+          amountIn: RecsType.BigInt,
+          amountOut: RecsType.BigInt,
+          item0: RecsType.Number,
+          item1: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    LiquidityAdded: (() => {
+      const tableId = new TableId("", "LiquidityAdded");
+      return defineComponent(
+        world,
+        {
+          amount: RecsType.BigInt,
+          receiver: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    LiquidityRemoved: (() => {
+      const tableId = new TableId("", "LiquidityRemoved");
+      return defineComponent(
+        world,
+        {
+          amount: RecsType.BigInt,
+          receiver: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     Health: (() => {
       const tableId = new TableId("", "Health");
       return defineComponent(

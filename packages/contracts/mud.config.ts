@@ -12,6 +12,30 @@ export default mudConfig({
     },
   },
   tables: {
+    SwapExecuted: {
+      schema: {
+        receiver: "bytes32",
+        amountIn: "uint256",
+        amountOut: "uint256",
+        item0: "uint16",
+        item1: "uint16",
+      },
+      ephemeral: true,
+    },
+    LiquidityAdded: {
+      schema: {
+        amount: "uint256",
+        receiver: "bytes32",
+      },
+      ephemeral: true,
+    },
+    LiquidityRemoved: {
+      schema: {
+        amount: "uint256",
+        receiver: "bytes32",
+      },
+      ephemeral: true,
+    },
     Health: {
       schema: {
         health: "uint256",

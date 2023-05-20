@@ -2,7 +2,23 @@
 pragma solidity >=0.8.0;
 
 import {System} from "@latticexyz/world/src/System.sol";
-import {Position, Sugar, Iron, Spices, Salt, Coins, CargoSpace, LPTokens, Ports} from "../../codegen/Tables.sol";
+import {
+    Position,
+    Sugar,
+    Iron,
+    Spices,
+    Salt,
+    Coins,
+    CargoSpace,
+    LPTokens,
+    Ports,
+    SwapExecuted,
+    SwapExecutedData,
+    LiquidityAdded,
+    LiquidityAddedData,
+    LiquidityRemoved,
+    LiquidityRemovedData
+} from "../../codegen/Tables.sol";
 import {IWorld} from "../../codegen/world/IWorld.sol";
 
 import {Speed} from "../../codegen/Tables.sol";
@@ -39,6 +55,17 @@ contract TradeSystem is System {
         setWeight(shipId, amount, outputAmount, item0, item1);
         transferToken(shipId, portId, item0, amount, true);
         transferToken(shipId, portId, item1, outputAmount, false);
+
+        SwapExecuted.emitEphemeral(
+            portId,
+            SwapExecutedData({
+                receiver: shipId,
+                amountIn: amount,
+                amountOut: outputAmount,
+                item0: uint16(item0),
+                item1: uint16(item1)
+            })
+        );
         return outputAmount;
     }
 
@@ -94,6 +121,8 @@ contract TradeSystem is System {
         LPTokens.set(portId, totalLiquidity + poolAmountOut); // For recordkeeping
         LPTokens.set(shipId, LPTokens.get(shipId) + poolAmountOut);
         CargoSpace.setCargo(shipId, weight_);
+        LiquidityAdded.emitEphemeral(shipId, LiquidityAddedData(poolAmountOut, shipId));
+
         return poolAmountOut;
     }
 
@@ -137,6 +166,7 @@ contract TradeSystem is System {
         }
         require(weight_ <= CargoSpace.getMax_cargo(shipId), "ERR_CARGO_FULL");
         CargoSpace.setCargo(shipId, weight_);
+        LiquidityRemoved.emitEphemeral(shipId, LiquidityRemovedData(poolAmountOut, shipId));
         return amount;
     }
 
