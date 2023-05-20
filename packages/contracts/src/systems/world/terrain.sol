@@ -13,7 +13,6 @@ library TerrainLibrary {
 
     function getTerrain(int256 positionX, int256 positionY) internal pure returns (uint256) {
         int128 perlinNoise = Perlin.noise2d(positionX, positionY, TERRAIN_SCALE, 64);
-        //uint128 perlinNoise = 0;
 
         // 5% chance of mountain
         // 15% chance of grass
