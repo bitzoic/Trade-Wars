@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { SHALLOW_OCEAN, DEEP_OCEAN, REEF, PORT, OBJECT_SCALE } from "./terrainPrimitives.sol";
+import { SHALLOW_OCEAN, SAND, REEF, PORT, OBJECT_SCALE } from "./terrainPrimitives.sol";
 import { CHUNK_SIZE } from "../../constants.sol";
 import { Perlin } from "./Perlin.sol";
 import { IWorld } from "../../codegen/world/IWorld.sol";
-import { Terrain } from "./terrain.sol";
+import { TerrainLibrary } from "./terrain.sol";
 
 library ObjectSystem {
 
@@ -13,11 +13,11 @@ library ObjectSystem {
     int128 constant _0_80 = 14_757_395_258_967_641_292; // 0.80 * 2**64
 
     function getObject(int256 positionX, int256 positionY) internal pure returns (uint256) {
-        uint256 terrainId = Terrain.getTerrain(positionX, positionY);
+        uint256 terrainId = TerrainLibrary.getTerrain(positionX, positionY);
 
         if (terrainId == SHALLOW_OCEAN) {
             return getShallowOceanObject(positionX, positionY);
-        } else if (terrainId != DEEP_OCEAN) {
+        } else if (terrainId == SAND) {
             return getLandObject(positionX, positionY);
         } else {
             return 0;
@@ -28,7 +28,7 @@ library ObjectSystem {
         // Only one object per chunk  
         int256 currentChunkX = positionX / CHUNK_SIZE;
         int256 currentChunkY = positionY / CHUNK_SIZE;
-        // Perlin noise on this position, package issues
+        // Perlin noise on this chunk
         int128 perlinNoise = Perlin.noise2d(currentChunkX, currentChunkY, OBJECT_SCALE, 64);
 
         // 10% chance of reef
@@ -37,14 +37,13 @@ library ObjectSystem {
         } else {
             return 0;
         }
-        return 0;
     }
 
     function getLandObject(int256 positionX, int256 positionY) internal pure returns (uint256) {
         // Only one object per chunk  
         int256 currentChunkX = positionX / CHUNK_SIZE;
         int256 currentChunkY = positionY / CHUNK_SIZE;
-        // Perlin noise on this position, package issues
+        // Perlin noise on this chunk
         int128 perlinNoise = Perlin.noise2d(currentChunkX, currentChunkY, OBJECT_SCALE, 64);
 
         // 20% chance of port
@@ -53,6 +52,5 @@ library ObjectSystem {
         } else {
             return 0;
         }
-        return 0;
     }
 }

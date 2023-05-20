@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { Perlin } from "./Perlin.sol";
 import "./terrainPrimitives.sol";
 
-library Terrain {
+library TerrainLibrary {
 
     int128 constant _0_95 = 17_524_406_870_023_073_035; // 0.95 * 2**64
     int128 constant _0_80 = 14_757_395_258_967_641_292; // 0.80 * 2**64

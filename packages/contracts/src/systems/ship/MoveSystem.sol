@@ -5,6 +5,8 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { Position } from "../../codegen/Tables.sol";
 import { Speed } from "../../codegen/Tables.sol";
 import { CHUNK_SIZE } from "../../constants.sol";
+import { SHALLOW_OCEAN, DEEP_OCEAN, REEF } from "../world/terrainPrimitives.sol";
+import { TerrainLibrary } from "../world/terrain.sol";
 
 contract MoveSystem is System {
 
@@ -33,6 +35,10 @@ contract MoveSystem is System {
         // In practice forces players to slowly "sail" across the map.
         require(distance <= shipSpeed * (block.timestamp - lastUpdate), "Breaking the laws of physics!");
     
+        // Make sure the move is in the ocean of the world
+        uint256 worldTerrain = TerrainLibrary.getTerrain(newPositionX, newPositionY);
+        require(worldTerrain == SHALLOW_OCEAN || worldTerrain == DEEP_OCEAN , "Cannot attack in port");
+
         // Now we can update the position
         Position.setPos_x(keccak256(abi.encodePacked(msg.sender)), newPositionX);
         Position.setPos_y(keccak256(abi.encodePacked(msg.sender)), newPositionY);
