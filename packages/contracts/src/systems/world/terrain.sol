@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { System } from "@latticexyz/world/src/System.sol";
-import { Perlin } from "@latticexyz/noise/contracts/Perlin.sol";
+import { Perlin } from "./Perlin.sol";
 import "./terrainPrimitives.sol";
 
-contract TerrainSystem is System {
+library Terrain {
 
-    function getTerrain(uint256 positionX, uint256 positionY) public pure returns (uint256) {
-        uint128 perlinNoise = Perlin.noise2d(positionX, positionY, 0, 0);
+    int128 constant _0_95 = 17_524_406_870_023_073_035; // 0.95 * 2**64
+    int128 constant _0_80 = 14_757_395_258_967_641_292; // 0.80 * 2**64
+    int128 constant _0_75 = 13_835_058_055_282_163_712; // 0.75 * 2**64
+    int128 constant _0_50 = 9_223_372_036_854_775_808; // 0.50 * 2**64
+
+    function getTerrain(int256 positionX, int256 positionY) internal pure returns (uint256) {
+        int128 perlinNoise = Perlin.noise2d(positionX, positionY, TERRAIN_SCALE, 64);
         //uint128 perlinNoise = 0;
 
         // 5% chance of mountain
@@ -19,16 +23,16 @@ contract TerrainSystem is System {
         // 25% chance of shallow ocean
         // 50% chance of deep ocean
         // Total: 75% chance of ocean
-        // if (perlinNoise >= 0.95) {
-        //     return MOUNTAIN;
-        // } else if (perlinNoise >= 0.8 && perlinNoise < 0.95) {
-        //     return GRASS;
-        // } else if (perlinNoise >= 0.75 && perlinNoise < 0.8) {
-        //     return SAND;
-        // } else if (perlinNoise >= 0.5 && perlinNoise < 0.75) {
-        //     return SHALLOW_OCEAN;
-        // } else {
-        //     return DEEP_OCEAN;
-        // }
+        if (perlinNoise >= _0_95) {
+            return MOUNTAIN;
+        } else if (perlinNoise >= _0_80 && perlinNoise < _0_95) {
+            return GRASS;
+        } else if (perlinNoise >= _0_75 && perlinNoise < _0_80) {
+            return SAND;
+        } else if (perlinNoise >= _0_50 && perlinNoise < _0_75) {
+            return SHALLOW_OCEAN;
+        } else {
+            return DEEP_OCEAN;
+        }
     }
 }

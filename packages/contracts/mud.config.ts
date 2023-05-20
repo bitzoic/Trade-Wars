@@ -33,10 +33,10 @@ export default mudConfig({
         },
         Position: {
             schema: { 
-                pos_x: "uint256", 
-                pos_y: "uint256",
-                chunk_x: "uint256", 
-                chunk_y: "uint256",
+                pos_x: "int256", 
+                pos_y: "int256",
+                chunk_x: "int256", 
+                chunk_y: "int256",
                 last_update: "uint256",
             },
         },

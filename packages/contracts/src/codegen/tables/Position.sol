@@ -21,10 +21,10 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Posit
 bytes32 constant PositionTableId = _tableId;
 
 struct PositionData {
-  uint256 pos_x;
-  uint256 pos_y;
-  uint256 chunk_x;
-  uint256 chunk_y;
+  int256 pos_x;
+  int256 pos_y;
+  int256 chunk_x;
+  int256 chunk_y;
   uint256 last_update;
 }
 
@@ -32,10 +32,10 @@ library Position {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](5);
-    _schema[0] = SchemaType.UINT256;
-    _schema[1] = SchemaType.UINT256;
-    _schema[2] = SchemaType.UINT256;
-    _schema[3] = SchemaType.UINT256;
+    _schema[0] = SchemaType.INT256;
+    _schema[1] = SchemaType.INT256;
+    _schema[2] = SchemaType.INT256;
+    _schema[3] = SchemaType.INT256;
     _schema[4] = SchemaType.UINT256;
 
     return SchemaLib.encode(_schema);
@@ -82,25 +82,25 @@ library Position {
   }
 
   /** Get pos_x */
-  function getPos_x(bytes32 key) internal view returns (uint256 pos_x) {
+  function getPos_x(bytes32 key) internal view returns (int256 pos_x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Get pos_x (using the specified store) */
-  function getPos_x(IStore _store, bytes32 key) internal view returns (uint256 pos_x) {
+  function getPos_x(IStore _store, bytes32 key) internal view returns (int256 pos_x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Set pos_x */
-  function setPos_x(bytes32 key, uint256 pos_x) internal {
+  function setPos_x(bytes32 key, int256 pos_x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -108,7 +108,7 @@ library Position {
   }
 
   /** Set pos_x (using the specified store) */
-  function setPos_x(IStore _store, bytes32 key, uint256 pos_x) internal {
+  function setPos_x(IStore _store, bytes32 key, int256 pos_x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -116,25 +116,25 @@ library Position {
   }
 
   /** Get pos_y */
-  function getPos_y(bytes32 key) internal view returns (uint256 pos_y) {
+  function getPos_y(bytes32 key) internal view returns (int256 pos_y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Get pos_y (using the specified store) */
-  function getPos_y(IStore _store, bytes32 key) internal view returns (uint256 pos_y) {
+  function getPos_y(IStore _store, bytes32 key) internal view returns (int256 pos_y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Set pos_y */
-  function setPos_y(bytes32 key, uint256 pos_y) internal {
+  function setPos_y(bytes32 key, int256 pos_y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -142,7 +142,7 @@ library Position {
   }
 
   /** Set pos_y (using the specified store) */
-  function setPos_y(IStore _store, bytes32 key, uint256 pos_y) internal {
+  function setPos_y(IStore _store, bytes32 key, int256 pos_y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -150,25 +150,25 @@ library Position {
   }
 
   /** Get chunk_x */
-  function getChunk_x(bytes32 key) internal view returns (uint256 chunk_x) {
+  function getChunk_x(bytes32 key) internal view returns (int256 chunk_x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Get chunk_x (using the specified store) */
-  function getChunk_x(IStore _store, bytes32 key) internal view returns (uint256 chunk_x) {
+  function getChunk_x(IStore _store, bytes32 key) internal view returns (int256 chunk_x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Set chunk_x */
-  function setChunk_x(bytes32 key, uint256 chunk_x) internal {
+  function setChunk_x(bytes32 key, int256 chunk_x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -176,7 +176,7 @@ library Position {
   }
 
   /** Set chunk_x (using the specified store) */
-  function setChunk_x(IStore _store, bytes32 key, uint256 chunk_x) internal {
+  function setChunk_x(IStore _store, bytes32 key, int256 chunk_x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -184,25 +184,25 @@ library Position {
   }
 
   /** Get chunk_y */
-  function getChunk_y(bytes32 key) internal view returns (uint256 chunk_y) {
+  function getChunk_y(bytes32 key) internal view returns (int256 chunk_y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Get chunk_y (using the specified store) */
-  function getChunk_y(IStore _store, bytes32 key) internal view returns (uint256 chunk_y) {
+  function getChunk_y(IStore _store, bytes32 key) internal view returns (int256 chunk_y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 3);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Set chunk_y */
-  function setChunk_y(bytes32 key, uint256 chunk_y) internal {
+  function setChunk_y(bytes32 key, int256 chunk_y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -210,7 +210,7 @@ library Position {
   }
 
   /** Set chunk_y (using the specified store) */
-  function setChunk_y(IStore _store, bytes32 key, uint256 chunk_y) internal {
+  function setChunk_y(IStore _store, bytes32 key, int256 chunk_y) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -270,14 +270,7 @@ library Position {
   }
 
   /** Set the full data using individual values */
-  function set(
-    bytes32 key,
-    uint256 pos_x,
-    uint256 pos_y,
-    uint256 chunk_x,
-    uint256 chunk_y,
-    uint256 last_update
-  ) internal {
+  function set(bytes32 key, int256 pos_x, int256 pos_y, int256 chunk_x, int256 chunk_y, uint256 last_update) internal {
     bytes memory _data = encode(pos_x, pos_y, chunk_x, chunk_y, last_update);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -290,10 +283,10 @@ library Position {
   function set(
     IStore _store,
     bytes32 key,
-    uint256 pos_x,
-    uint256 pos_y,
-    uint256 chunk_x,
-    uint256 chunk_y,
+    int256 pos_x,
+    int256 pos_y,
+    int256 chunk_x,
+    int256 chunk_y,
     uint256 last_update
   ) internal {
     bytes memory _data = encode(pos_x, pos_y, chunk_x, chunk_y, last_update);
@@ -316,23 +309,23 @@ library Position {
 
   /** Decode the tightly packed blob using this table's schema */
   function decode(bytes memory _blob) internal pure returns (PositionData memory _table) {
-    _table.pos_x = (uint256(Bytes.slice32(_blob, 0)));
+    _table.pos_x = (int256(uint256(Bytes.slice32(_blob, 0))));
 
-    _table.pos_y = (uint256(Bytes.slice32(_blob, 32)));
+    _table.pos_y = (int256(uint256(Bytes.slice32(_blob, 32))));
 
-    _table.chunk_x = (uint256(Bytes.slice32(_blob, 64)));
+    _table.chunk_x = (int256(uint256(Bytes.slice32(_blob, 64))));
 
-    _table.chunk_y = (uint256(Bytes.slice32(_blob, 96)));
+    _table.chunk_y = (int256(uint256(Bytes.slice32(_blob, 96))));
 
     _table.last_update = (uint256(Bytes.slice32(_blob, 128)));
   }
 
   /** Tightly pack full data using this table's schema */
   function encode(
-    uint256 pos_x,
-    uint256 pos_y,
-    uint256 chunk_x,
-    uint256 chunk_y,
+    int256 pos_x,
+    int256 pos_y,
+    int256 chunk_x,
+    int256 chunk_y,
     uint256 last_update
   ) internal view returns (bytes memory) {
     return abi.encodePacked(pos_x, pos_y, chunk_x, chunk_y, last_update);

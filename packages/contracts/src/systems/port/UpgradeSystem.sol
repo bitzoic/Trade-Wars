@@ -4,16 +4,20 @@ pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
 import { Position, Coins, Health, FirePower, CargoSpace } from "../../codegen/Tables.sol";
 import { CHUNK_SIZE, HEALTH_COST, CARGO_COST, FIRE_POWER_COST, FIRE_RATE_COST } from "../../constants.sol";
+import { PORT } from "../world/terrainPrimitives.sol";
+import { ObjectSystem } from "../world/objects.sol";
 
 contract UpgradeSystem is System {
 
     function upgrade_fire_power(uint256 amount) public {
-        uint256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
-        uint256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentFirePower = FirePower.getPower(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentCoins = Coins.get(keccak256(abi.encodePacked(msg.sender)));
 
-        // TODO: Require we are in the same chunk as a port
+        // Require we are in the same chunk as a port
+        uint256 worldObject = ObjectSystem.getObject(currentPositionX, currentPositionY);
+        require(worldObject == PORT, "Must be in port");
 
         require(currentCoins >= FIRE_POWER_COST * amount, "Not enough coins");
 
@@ -23,12 +27,14 @@ contract UpgradeSystem is System {
     }
 
     function upgrade_fire_rate(uint256 amount) public {
-        uint256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
-        uint256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentFireRate = FirePower.getRate(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentCoins = Coins.get(keccak256(abi.encodePacked(msg.sender)));
-
-        // TODO: Require we are in the same chunk as a port
+        
+        // Require we are in the same chunk as a port
+        uint256 worldObject = ObjectSystem.getObject(currentPositionX, currentPositionY);
+        require(worldObject == PORT, "Must be in port");
 
         require(currentCoins >= FIRE_RATE_COST * amount, "Not enough coins");
 
@@ -38,12 +44,14 @@ contract UpgradeSystem is System {
     }
 
     function upgrade_max_health(uint256 amount) public {
-        uint256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
-        uint256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentMaxHealth = Health.getMax_health(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentCoins = Coins.get(keccak256(abi.encodePacked(msg.sender)));
 
-        // TODO: Require we are in the same chunk as a port
+        // Require we are in the same chunk as a port
+        uint256 worldObject = ObjectSystem.getObject(currentPositionX, currentPositionY);
+        require(worldObject == PORT, "Must be in port");
 
         require(currentCoins >= HEALTH_COST * amount, "Not enough coins");
 
@@ -54,12 +62,14 @@ contract UpgradeSystem is System {
     } 
 
     function upgrade_cargo(uint256 amount) public {
-        uint256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
-        uint256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
+        int256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentMaxCargo = CargoSpace.getMax_cargo(keccak256(abi.encodePacked(msg.sender)));
         uint256 currentCoins = Coins.get(keccak256(abi.encodePacked(msg.sender)));
 
-        // TODO: Require we are in the same chunk as a port
+        // Require we are in the same chunk as a port
+        uint256 worldObject = ObjectSystem.getObject(currentPositionX, currentPositionY);
+        require(worldObject == PORT, "Must be in port");
 
         require(currentCoins >= CARGO_COST * amount, "Not enough coins");
 
