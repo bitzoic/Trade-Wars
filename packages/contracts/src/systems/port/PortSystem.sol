@@ -11,7 +11,7 @@ contract PortSystem is System {
         uint256 yCoord,
         string calldata name,
         uint256[5] calldata amounts,
-        uint256[5] calldata speeds
+        int256[5] calldata speeds
     ) public {
         bytes32 portId = keccak256(abi.encodePacked(xCoord, yCoord));
         Ports.set(portId, _msgSender(), name, speeds, block.timestamp);
@@ -25,7 +25,7 @@ contract PortSystem is System {
         IWorld(_world()).joinPool(portId, 100, amounts);
     }
 
-    function initPort(uint256 xCoord, uint256 yCoord, uint256[5] calldata amounts, uint256[5] calldata speeds) public {
+    function initPort(uint256 xCoord, uint256 yCoord, uint256[5] calldata amounts, int256[5] calldata speeds) public {
         this.initPort(xCoord, yCoord, "Port", amounts, speeds);
     }
 
@@ -41,11 +41,21 @@ contract PortSystem is System {
     function previewManufacture(bytes32 portId) public view returns (uint256[5] memory amounts) {
         uint256 lastUpdated = Ports.getLast_updated(portId);
         uint256 timeSinceLastUpdate = block.timestamp - lastUpdated;
-        uint256[5] memory speeds = Ports.getPort_speeds(portId);
+        int256[5] memory speeds = Ports.getPort_speeds(portId);
         uint256[5] memory amounts_ = getBalance(portId);
         uint256[5] memory newAmounts;
         for (uint256 i = 0; i < 5; i++) {
-            newAmounts[i] = amounts_[i] + speeds[i] * timeSinceLastUpdate;
+            if (speeds[i] < 0) {
+                if (amounts_[i] < uint256(-speeds[i]) * timeSinceLastUpdate) {
+                    newAmounts[i] = 0;
+                    // avoid underflow
+                } else {
+                    newAmounts[i] = amounts_[i] - uint256(-speeds[i]) * timeSinceLastUpdate;
+                }
+            }
+            {
+                newAmounts[i] = amounts_[i] + uint256(speeds[i]) * timeSinceLastUpdate;
+            }
         }
         return newAmounts;
     }

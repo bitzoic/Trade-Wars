@@ -23,7 +23,7 @@ bytes32 constant PortsTableId = _tableId;
 struct PortsData {
   address port_owner;
   string port_name;
-  uint256[5] port_speeds;
+  int256[5] port_speeds;
   uint256 last_updated;
 }
 
@@ -33,7 +33,7 @@ library Ports {
     SchemaType[] memory _schema = new SchemaType[](4);
     _schema[0] = SchemaType.ADDRESS;
     _schema[1] = SchemaType.STRING;
-    _schema[2] = SchemaType.UINT256_ARRAY;
+    _schema[2] = SchemaType.INT256_ARRAY;
     _schema[3] = SchemaType.UINT256;
 
     return SchemaLib.encode(_schema);
@@ -231,37 +231,37 @@ library Ports {
   }
 
   /** Get port_speeds */
-  function getPort_speeds(bytes32 port_id) internal view returns (uint256[5] memory port_speeds) {
+  function getPort_speeds(bytes32 port_id) internal view returns (int256[5] memory port_speeds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
-    return toStaticArray_uint256_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
+    return toStaticArray_int256_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int256());
   }
 
   /** Get port_speeds (using the specified store) */
-  function getPort_speeds(IStore _store, bytes32 port_id) internal view returns (uint256[5] memory port_speeds) {
+  function getPort_speeds(IStore _store, bytes32 port_id) internal view returns (int256[5] memory port_speeds) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
-    return toStaticArray_uint256_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
+    return toStaticArray_int256_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int256());
   }
 
   /** Set port_speeds */
-  function setPort_speeds(bytes32 port_id, uint256[5] memory port_speeds) internal {
+  function setPort_speeds(bytes32 port_id, int256[5] memory port_speeds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint256_5(port_speeds)));
+    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_int256_5(port_speeds)));
   }
 
   /** Set port_speeds (using the specified store) */
-  function setPort_speeds(IStore _store, bytes32 port_id, uint256[5] memory port_speeds) internal {
+  function setPort_speeds(IStore _store, bytes32 port_id, int256[5] memory port_speeds) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
-    _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint256_5(port_speeds)));
+    _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_int256_5(port_speeds)));
   }
 
   /** Get the length of port_speeds */
@@ -283,25 +283,25 @@ library Ports {
   }
 
   /** Get an item of port_speeds (unchecked, returns invalid data if index overflows) */
-  function getItemPort_speeds(bytes32 port_id, uint256 _index) internal view returns (uint256) {
+  function getItemPort_speeds(bytes32 port_id, uint256 _index) internal view returns (int256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Get an item of port_speeds (using the specified store) (unchecked, returns invalid data if index overflows) */
-  function getItemPort_speeds(IStore _store, bytes32 port_id, uint256 _index) internal view returns (uint256) {
+  function getItemPort_speeds(IStore _store, bytes32 port_id, uint256 _index) internal view returns (int256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
   /** Push an element to port_speeds */
-  function pushPort_speeds(bytes32 port_id, uint256 _element) internal {
+  function pushPort_speeds(bytes32 port_id, int256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
@@ -309,7 +309,7 @@ library Ports {
   }
 
   /** Push an element to port_speeds (using the specified store) */
-  function pushPort_speeds(IStore _store, bytes32 port_id, uint256 _element) internal {
+  function pushPort_speeds(IStore _store, bytes32 port_id, int256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
@@ -333,7 +333,7 @@ library Ports {
   }
 
   /** Update an element of port_speeds at `_index` */
-  function updatePort_speeds(bytes32 port_id, uint256 _index, uint256 _element) internal {
+  function updatePort_speeds(bytes32 port_id, uint256 _index, int256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
@@ -341,7 +341,7 @@ library Ports {
   }
 
   /** Update an element of port_speeds (using the specified store) at `_index` */
-  function updatePort_speeds(IStore _store, bytes32 port_id, uint256 _index, uint256 _element) internal {
+  function updatePort_speeds(IStore _store, bytes32 port_id, uint256 _index, int256 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((port_id));
 
@@ -405,7 +405,7 @@ library Ports {
     bytes32 port_id,
     address port_owner,
     string memory port_name,
-    uint256[5] memory port_speeds,
+    int256[5] memory port_speeds,
     uint256 last_updated
   ) internal {
     bytes memory _data = encode(port_owner, port_name, port_speeds, last_updated);
@@ -422,7 +422,7 @@ library Ports {
     bytes32 port_id,
     address port_owner,
     string memory port_name,
-    uint256[5] memory port_speeds,
+    int256[5] memory port_speeds,
     uint256 last_updated
   ) internal {
     bytes memory _data = encode(port_owner, port_name, port_speeds, last_updated);
@@ -464,7 +464,7 @@ library Ports {
 
       _start = _end;
       _end += _encodedLengths.atIndex(1);
-      _table.port_speeds = toStaticArray_uint256_5(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint256());
+      _table.port_speeds = toStaticArray_int256_5(SliceLib.getSubslice(_blob, _start, _end).decodeArray_int256());
     }
   }
 
@@ -472,7 +472,7 @@ library Ports {
   function encode(
     address port_owner,
     string memory port_name,
-    uint256[5] memory port_speeds,
+    int256[5] memory port_speeds,
     uint256 last_updated
   ) internal view returns (bytes memory) {
     uint40[] memory _counters = new uint40[](2);
@@ -486,7 +486,7 @@ library Ports {
         last_updated,
         _encodedLengths.unwrap(),
         bytes((port_name)),
-        EncodeArray.encode(fromStaticArray_uint256_5(port_speeds))
+        EncodeArray.encode(fromStaticArray_int256_5(port_speeds))
       );
   }
 
@@ -513,15 +513,15 @@ library Ports {
   }
 }
 
-function toStaticArray_uint256_5(uint256[] memory _value) pure returns (uint256[5] memory _result) {
+function toStaticArray_int256_5(int256[] memory _value) pure returns (int256[5] memory _result) {
   // in memory static arrays are just dynamic arrays without the length byte
   assembly {
     _result := add(_value, 0x20)
   }
 }
 
-function fromStaticArray_uint256_5(uint256[5] memory _value) view returns (uint256[] memory _result) {
-  _result = new uint256[](5);
+function fromStaticArray_int256_5(int256[5] memory _value) view returns (int256[] memory _result) {
+  _result = new int256[](5);
   uint256 fromPointer;
   uint256 toPointer;
   assembly {
