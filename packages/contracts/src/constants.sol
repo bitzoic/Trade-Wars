@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-uint256 constant CHUNK_SIZE = 10;
+int256 constant CHUNK_SIZE = 10;
 
 uint256 constant REGEN_COST = 50;
 uint256 constant FIRE_POWER_COST = 1000;
