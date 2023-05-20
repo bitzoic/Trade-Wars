@@ -24,4 +24,3 @@ enum Items {
     SPICES,
     SALT
 }
-

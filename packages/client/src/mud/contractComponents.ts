@@ -178,6 +178,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    LPTokens: (() => {
+      const tableId = new TableId("", "LPTokens");
+      return defineComponent(
+        world,
+        {
+          amount: RecsType.BigInt,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     Ports: (() => {
       const tableId = new TableId("", "Ports");
       return defineComponent(
