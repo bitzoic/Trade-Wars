@@ -47,9 +47,3 @@ contract TradeSugarSystem is System {
         uint256 buy_cost = amount * 5;
 
         require(currentCoins >= buy_cost, "Not enough coins");
-
-        Coins.set(keccak256(abi.encodePacked(msg.sender)), currentCoins - buy_cost);
-        Sugar.set(keccak256(abi.encodePacked(msg.sender)), currentSugar + amount);
-        CargoSpace.setCargo(keccak256(abi.encodePacked(msg.sender)), currentCargoWeight + (amount * SUGAR_WEIGHT));
-    }
-}

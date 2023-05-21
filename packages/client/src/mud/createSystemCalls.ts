@@ -1,21 +1,45 @@
-import { getComponentValue } from "@latticexyz/recs";
-import { awaitStreamValue } from "@latticexyz/utils";
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { uuid, awaitStreamValue } from "@latticexyz/utils";
+import { MonsterCatchResult } from "../monsterCatchResult";
 import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-  { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
-  { Counter }: ClientComponents
+  { singletonEntity, playerEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  components: ClientComponents
 ) {
-  const increment = async () => {
-    const tx = await worldSend("increment", []);
-    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-    return getComponentValue(Counter, singletonEntity);
+  const moveTo = async (x: number, y: number) => {
+    // TODO
+    return null as any;
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    // TODO
+    return null as any;
+  };
+
+  const spawn = async (x: number, y: number) => {
+    // TODO
+    return null as any;
+  };
+
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
   };
 
   return {
-    increment,
+    moveTo,
+    moveBy,
+    spawn,
+    throwBall,
+    fleeEncounter,
   };
 }
