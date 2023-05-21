@@ -7,8 +7,8 @@ import {Position, Sugar, Iron, Spices, Salt, Coins, Ports} from "../../codegen/T
 
 contract PortSystem is System {
     function initPort(
-        uint256 xCoord,
-        uint256 yCoord,
+        int256 xCoord,
+        int256 yCoord,
         string calldata name,
         uint256[5] calldata amounts,
         int256[5] calldata speeds
@@ -25,7 +25,7 @@ contract PortSystem is System {
         IWorld(_world()).joinPool(portId, 100, amounts);
     }
 
-    function initPort(uint256 xCoord, uint256 yCoord, uint256[5] calldata amounts, int256[5] calldata speeds) public {
+    function initPort(int256 xCoord, int256 yCoord, uint256[5] calldata amounts, int256[5] calldata speeds) public {
         this.initPort(xCoord, yCoord, "Port", amounts, speeds);
     }
 

@@ -32,6 +32,7 @@ import {
     SCALE,
     AMM_FEE
 } from "../../constants.sol";
+import {PORT} from "../world/terrainPrimitives.sol";
 
 contract TradeSystem is System {
     function buyWithCoins(uint256 amount, bytes32 portId, Items item) public {
@@ -171,10 +172,10 @@ contract TradeSystem is System {
     }
 
     function checkValidLocation(bytes32 shipId, bytes32 portId) public view returns (bool) {
-        uint256 currentChunkX = Position.getPos_x(shipId) / CHUNK_SIZE;
-        uint256 currentChunkY = Position.getPos_y(shipId) / CHUNK_SIZE;
-        uint256 portChunkX = Position.getPos_x(portId) / CHUNK_SIZE;
-        uint256 portChunkY = Position.getPos_y(portId) / CHUNK_SIZE;
+        int256 currentChunkX = Position.getPos_x(shipId) / CHUNK_SIZE;
+        int256 currentChunkY = Position.getPos_y(shipId) / CHUNK_SIZE;
+        int256 portChunkX = Position.getPos_x(portId) / CHUNK_SIZE;
+        int256 portChunkY = Position.getPos_y(portId) / CHUNK_SIZE;
         return (currentChunkX == portChunkX && currentChunkY == portChunkY);
     }
 

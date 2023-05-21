@@ -5,14 +5,14 @@ pragma solidity >=0.8.0;
 
 interface IPortSystem {
   function initPort(
-    uint256 xCoord,
-    uint256 yCoord,
+    int256 xCoord,
+    int256 yCoord,
     string calldata name,
     uint256[5] calldata amounts,
     int256[5] calldata speeds
   ) external;
 
-  function initPort(uint256 xCoord, uint256 yCoord, uint256[5] calldata amounts, int256[5] calldata speeds) external;
+  function initPort(int256 xCoord, int256 yCoord, uint256[5] calldata amounts, int256[5] calldata speeds) external;
 
   function manufacture(bytes32 portId) external;
 
