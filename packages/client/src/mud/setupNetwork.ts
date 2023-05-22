@@ -1,11 +1,12 @@
 import { setupMUDV2Network } from "@latticexyz/std-client";
-import { createFastTxExecutor, createFaucetService } from "@latticexyz/network";
+import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+import { getTableIds } from "@latticexyz/utils";
 import storeConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
@@ -13,19 +14,14 @@ export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 export async function setupNetwork() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
-  const result = await setupMUDV2Network<
-    typeof contractComponents,
-    typeof storeConfig
-  >({
+  const result = await setupMUDV2Network<typeof contractComponents, typeof storeConfig>({
     networkConfig,
     world,
     contractComponents,
     syncThread: "main",
-    worldAbi: IWorld__factory.abi,
     storeConfig,
+    worldAbi: IWorld__factory.abi,
   });
-
-  result.startSync();
 
   // Request drip from faucet
   const signer = result.network.signer.get();
@@ -52,18 +48,30 @@ export async function setupNetwork() {
     setInterval(requestDrip, 20000);
   }
 
+  const provider = result.network.providers.get().json;
+  const signerOrProvider = signer ?? provider;
   // Create a World contract instance
-  const worldContract = IWorld__factory.connect(
-    networkConfig.worldAddress,
-    signer ?? result.network.providers.get().json
-  );
+  const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
+
+  if (networkConfig.snapSync) {
+    const currentBlockNumber = await provider.getBlockNumber();
+    const tableRecords = await getSnapSyncRecords(
+      networkConfig.worldAddress,
+      getTableIds(storeConfig),
+      currentBlockNumber,
+      signerOrProvider
+    );
+
+    console.log(`Syncing ${tableRecords.length} records`);
+    result.startSync(tableRecords, currentBlockNumber);
+  } else {
+    result.startSync();
+  }
 
   // Create a fast tx executor
   const fastTxExecutor =
     signer?.provider instanceof JsonRpcProvider
-      ? await createFastTxExecutor(
-          signer as Signer & { provider: JsonRpcProvider }
-        )
+      ? await createFastTxExecutor(signer as Signer & { provider: JsonRpcProvider })
       : null;
 
   // TODO: infer this from fastTxExecute signature?
@@ -75,9 +83,7 @@ export async function setupNetwork() {
     }
   ) => Promise<ReturnType<C[F]>>;
 
-  function bindFastTxExecute<C extends Contract>(
-    contract: C
-  ): BoundFastTxExecuteFn<C> {
+  function bindFastTxExecute<C extends Contract>(contract: C): BoundFastTxExecuteFn<C> {
     return async function (...args) {
       if (!fastTxExecutor) {
         throw new Error("no signer");
@@ -87,12 +93,10 @@ export async function setupNetwork() {
     };
   }
 
-  const worldSend = bindFastTxExecute(worldContract);
-
   return {
     ...result,
     worldContract,
-    worldSend,
+    worldSend: bindFastTxExecute(worldContract),
     fastTxExecutor,
   };
 }
