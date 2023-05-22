@@ -115,8 +115,8 @@ export default mudConfig({
       schema: {
         port_owner: "address",
         port_name: "string",
-        port_speeds: "int256[5]",
         last_updated: "uint256",
+        port_speeds: "int256[5]",
       },
     },
   },

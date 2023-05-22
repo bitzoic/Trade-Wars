@@ -14,7 +14,7 @@ contract PortSystem is System {
         int256[5] calldata speeds
     ) public {
         bytes32 portId = keccak256(abi.encodePacked(xCoord, yCoord));
-        Ports.set(portId, _msgSender(), name, speeds, block.timestamp);
+        Ports.set(portId, _msgSender(), name, block.timestamp,speeds);
         Position.setPos_x(portId, xCoord);
         Position.setPos_y(portId, yCoord);
         Coins.set(portId, amounts[0]);
