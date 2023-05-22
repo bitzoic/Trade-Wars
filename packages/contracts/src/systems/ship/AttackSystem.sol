@@ -10,8 +10,9 @@ import { ObjectSystem } from "../world/objects.sol";
 contract AttackSystem is System {
 
     function attack(address otherPlayer) public {
-        int256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(msg.sender)));
-        int256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(msg.sender)));
+        address player = _msgSender();
+        int256 currentPositionX = Position.getPos_x(keccak256(abi.encodePacked(player)));
+        int256 currentPositionY = Position.getPos_y(keccak256(abi.encodePacked(player)));
         int256 otherPlayerPositionX = Position.getPos_x(keccak256(abi.encodePacked(otherPlayer)));
         int256 otherPlayerPositionY = Position.getPos_y(keccak256(abi.encodePacked(otherPlayer)));
 
@@ -26,9 +27,9 @@ contract AttackSystem is System {
         uint256 worldObject = ObjectSystem.getObject(currentPositionX, currentPositionY);
         require(worldObject != PORT, "Cannot attack in port");
 
-        uint256 lastFire = FirePower.getLast_update(keccak256(abi.encodePacked(msg.sender)));
-        uint256 fireRate = FirePower.getRate(keccak256(abi.encodePacked(msg.sender)));
-        uint256 firePower = FirePower.getPower(keccak256(abi.encodePacked(msg.sender)));
+        uint256 lastFire = FirePower.getLast_update(keccak256(abi.encodePacked(player)));
+        uint256 fireRate = FirePower.getRate(keccak256(abi.encodePacked(player)));
+        uint256 firePower = FirePower.getPower(keccak256(abi.encodePacked(player)));
         // Can only fire at a particular rate
         require(lastFire + fireRate >= block.timestamp, "Reloading");
         
@@ -39,7 +40,7 @@ contract AttackSystem is System {
         else { 
             Health.setHealth(keccak256(abi.encodePacked(otherPlayer)), otherPlayerHealth - firePower);
         }
-        FirePower.setLast_update(keccak256(abi.encodePacked(msg.sender)), block.timestamp);
+        FirePower.setLast_update(keccak256(abi.encodePacked(player)), block.timestamp);
     }
 
     function death(address player) internal {
