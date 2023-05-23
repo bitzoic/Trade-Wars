@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Perlin } from "./Perlin.sol";
+import { Perlin } from "@latticexyz/noise/contracts/Perlin.sol";
 import "./terrainPrimitives.sol";
 
 library TerrainLibrary {
