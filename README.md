@@ -1,8 +1,4 @@
-<p align="center">
-    <picture>
-        <source srcset=".docs/mjlogo.png">
-    </picture>
-</p>
+![Trade Wars](/ship-game/.docs/mjlogo.png)
 
 # Trade Wars
 
