@@ -1,4 +1,8 @@
-![Trade Wars](/ship-game/.docs/mjlogo.png)
+<p align="center">
+    <picture>
+        <img alt="Trade Wars Logo" width="400px" src=".docs/mjlogo.png">
+    </picture>
+</p>
 
 # Trade Wars
 
