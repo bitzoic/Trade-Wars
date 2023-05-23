@@ -5,4 +5,8 @@ pragma solidity >=0.8.0;
 
 interface IMoveSystem {
   function move(int256 newPositionX, int256 newPositionY) external;
+
+  function getTerrain(int256 positionX, int256 positionY) external pure returns (uint256);
+
+  function getObject(int256 positionX, int256 positionY) external pure returns (uint256);
 }

@@ -3,11 +3,11 @@ pragma solidity >=0.8.0;
 
 import { SHALLOW_OCEAN, SAND, REEF, PORT, OBJECT_SCALE } from "./terrainPrimitives.sol";
 import { CHUNK_SIZE } from "../../constants.sol";
-import { Perlin } from "./Perlin.sol";
+import { Perlin } from "@latticexyz/noise/contracts/Perlin.sol";
 import { IWorld } from "../../codegen/world/IWorld.sol";
 import { TerrainLibrary } from "./terrain.sol";
 
-library ObjectSystem {
+library ObjectLibrary {
 
     int128 constant _0_90 = 16_602_069_666_338_596_454; // 0.95 * 2**64
     int128 constant _0_80 = 14_757_395_258_967_641_292; // 0.80 * 2**64

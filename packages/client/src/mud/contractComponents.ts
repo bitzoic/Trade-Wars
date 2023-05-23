@@ -262,5 +262,20 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    ShipWreck: (() => {
+      const tableId = new TableId("", "ShipWreck");
+      return defineComponent(
+        world,
+        {
+          playerId: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }

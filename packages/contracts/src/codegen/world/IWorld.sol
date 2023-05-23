@@ -11,6 +11,7 @@ import { ITradeSystem } from "./ITradeSystem.sol";
 import { IUpgradeSystem } from "./IUpgradeSystem.sol";
 import { IAttackSystem } from "./IAttackSystem.sol";
 import { IMoveSystem } from "./IMoveSystem.sol";
+import { IShipWreckSystem } from "./IShipWreckSystem.sol";
 
 /**
  * The IWorld interface includes all systems dynamically added to the World
@@ -23,7 +24,8 @@ interface IWorld is
   ITradeSystem,
   IUpgradeSystem,
   IAttackSystem,
-  IMoveSystem
+  IMoveSystem,
+  IShipWreckSystem
 {
 
 }

@@ -119,5 +119,10 @@ export default mudConfig({
         port_speeds: "int256[5]",
       },
     },
+    ShipWreck: {
+        schema: {
+            playerId: "bytes32"
+        }
+    }
   },
 });

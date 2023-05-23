@@ -11,4 +11,6 @@ interface IUpgradeSystem {
   function upgrade_max_health(uint256 amount) external;
 
   function upgrade_cargo(uint256 amount) external;
+
+  function upgrade_speed(uint256 amount) external;
 }
