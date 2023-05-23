@@ -53,7 +53,7 @@ export function createSystemCalls(
   // ONLY CALL IF IT'S A PORT
   const getPortStats = async (port: string) => {
     const res = port as typeof singletonEntity;
-    if (getComponentValue(Ports, res)?.port_name.length === 0) {
+    if (!getComponentValue(Ports, res)) {
       return null;
     }
 

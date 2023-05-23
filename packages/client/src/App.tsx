@@ -1,6 +1,20 @@
 // import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useState } from "react";
+import {
+  Text,
+  Row,
+  Heading,
+  Br,
+  IconButton,
+  PixelIcon,
+  Modal,
+  Header,
+  Spacer,
+  ModalContent,
+  Footer,
+} from "nes-ui-react";
+
 import "./App.css";
 
 import { SwapModal } from "./components/SwapModal";
@@ -16,6 +30,8 @@ export const App = () => {
   const [x2, setX2] = useState("10");
   const [y2, setY2] = useState("4");
   const [map, setMap] = useState<number[][]>([]);
+  const [demoDialogOpen, setDemoDialogOpen] = useState(false);
+
   const handleGetMap = async () => {
     const result = await getMap(Number(x1), Number(y1), Number(x2), Number(y2));
     setMap(result);
@@ -66,9 +82,6 @@ export const App = () => {
               <span
                 key={`${rowIndex}-${colIndex}`}
                 style={{
-                  backgroundColor: `rgb(${value * 50}, ${value * 50}, ${
-                    value * 50
-                  })`,
                   padding: "0.5rem",
                   margin: "0.1rem",
                 }}
@@ -78,6 +91,17 @@ export const App = () => {
             ))}
           </div>
         ))}
+        <IconButton
+          borderInverted
+          color="primary"
+          onClick={() => setDemoDialogOpen(true)}
+        >
+          <Text size="small">Open Modal</Text>
+          <PixelIcon name="pixelicon-checkmark" size="small" />
+        </IconButton>
+        <Modal open={demoDialogOpen} onClose={() => setDemoDialogOpen(false)}>
+          <SwapModal currentPort={"e"} />
+        </Modal>
       </div>
     </>
   );

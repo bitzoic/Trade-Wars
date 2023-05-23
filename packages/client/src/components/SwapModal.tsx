@@ -1,8 +1,10 @@
-// import { useComponentValue } from "@latticexyz/react";
+// import { getComponentValue } from "@latticexyz/recs";
 import { useMUD } from "../MUDContext";
 import { useState } from "react";
-import "./App.css";
-export const SwapModal = () => {
+import { Heading, Container, Row, Button, Br } from "nes-ui-react";
+import { BigNumber } from "ethers";
+
+export const SwapModal = (currentPort: string) => {
   const {
     components: { LPTokens },
     systemCalls: {
@@ -11,6 +13,7 @@ export const SwapModal = () => {
       addLiquidity,
       removeLiquidity,
       swap,
+      getShipResources,
     },
     network: { singletonEntity },
   } = useMUD();
@@ -19,40 +22,85 @@ export const SwapModal = () => {
   const [buyAmount, setBuyAmount] = useState("");
   const [addAmount, setAddAmount] = useState("");
   const [removeAmount, setRemoveAmount] = useState("");
-  const [maxAmount, setMaxAmount] = useState("");
-  const handleSell = async () => {
+  const [selectedAsset, setSelectedAsset] = useState("Salt");
+
+  const handleSell = async (amount: bigint, item: number) => {
     // Call the sellForCoins system call
-    // const result = await sellForCoins();
-    // console.log(result);
+    const result = await sellForCoins(item, currentPort, amount);
+    console.log(result);
   };
 
-  const handleBuy = async () => {
+  const handleBuy = async (amount: bigint, item: number) => {
     // Call the buyWithCoins system call
-    // const result = await buyWithCoins();
-    // console.log(result);
+    const result = await buyWithCoins(item, currentPort, amount);
+    console.log(result);
   };
 
-  const handleAddLiquidity = async () => {
+  const handleAddLiquidity = async (amount: bigint) => {
     // Call the addLiquidity system call
-    // const result = await addLiquidity();
-    // console.log(result);
+    const result = await addLiquidity(amount, currentPort);
+    console.log(result);
   };
 
-  const handleRemoveLiquidity = async () => {
+  const handleRemoveLiquidity = async (amount: bigint) => {
     // Call the removeLiquidity system call
-    // const result = await removeLiquidity();
-    // console.log(result);
+    const result = await removeLiquidity(amount, currentPort);
+    console.log(result);
   };
 
-  const handleSwap = async () => {
+  const handleSwap = async (Item0: number, Item1: number, amount: bigint) => {
     // Call the swap system call
-    // const result = await swap();
-    // console.log(result);
+    const result = await swap(Item0, Item1, currentPort, amount);
+    console.log(result);
+  };
+  const handleMax = async () => {
+    // Set the maxAmount to the maximum detected assets for the selected asset
+    // const ship = await getShipResources();
+    // switch (selectedAsset) {
+    //   case "Salt":
+    //     setSellAmount(ship.salt() || "");
+    //     setBuyAmount();
+    //     setAddAmount();
+    //     setRemoveAmount();
+    //     break;
+    //   case "Spices":
+    //     setSellAmount(getComponentValue(Spices, singletonEntity) || "");
+    //     setBuyAmount(getComponentValue(Spices, singletonEntity) || "");
+    //     setAddAmount(getComponentValue(Spices, singletonEntity) || "");
+    //     setRemoveAmount(getComponentValue(Spices, singletonEntity) || "");
+    //     break;
+    //   case "Iron":
+    //     setSellAmount(getComponentValue(Iron, singletonEntity) || "");
+    //     setBuyAmount(getComponentValue(Iron, singletonEntity) || "");
+    //     setAddAmount(getComponentValue(Iron, singletonEntity) || "");
+    //     setRemoveAmount(getComponentValue(Iron, singletonEntity) || "");
+    //     break;
+    //   case "Sugar":
+    //     setSellAmount(getComponentValue(Sugar, singletonEntity) || "");
+    //     setBuyAmount(getComponentValue(Sugar, singletonEntity) || "");
+    //     setAddAmount(getComponentValue(Sugar, singletonEntity) || "");
+    //     setRemoveAmount(getComponentValue(Sugar, singletonEntity) || "");
+    //     break;
+    //   case "Coins":
+    //     setSellAmount(getComponentValue(Coins, singletonEntity) || "");
+    //     setBuyAmount(getComponentValue(Coins, singletonEntity) || "");
+    //     setAddAmount(getComponentValue(Coins, singletonEntity) || "");
+    //     setRemoveAmount(getComponentValue(Coins, singletonEntity) || "");
+    //     break;
+    //   case "LP Tokens":
+    //     setSellAmount(getComponentValue(LPTokens, singletonEntity) || "");
+    //     setBuyAmount(getComponentValue(LPTokens, singletonEntity) || "");
+    //     setAddAmount(getComponentValue(LPTokens, singletonEntity) || "");
+    //     setRemoveAmount(getComponentValue(LPTokens, singletonEntity) || "");
+    //     break;
+    //   default:
+    //     break;
+    // }
   };
 
   return (
-    <div className="swap-container">
-      <div className="swap-tabs">
+    <div className="swap-modal-container">
+      <div className="swap-modal-tabs">
         <button
           className={activeTab === "sell" ? "active" : ""}
           onClick={() => setActiveTab("sell")}
@@ -84,7 +132,17 @@ export const SwapModal = () => {
           Swap
         </button>
       </div>
-      <div className="swap-content">
+      <div className="swap-modal-content">
+        <select
+          value={selectedAsset}
+          onChange={(e) => setSelectedAsset(e.target.value)}
+        >
+          <option value="Salt">Salt</option>
+          <option value="Spices">Spices</option>
+          <option value="Iron">Iron</option>
+          <option value="Sugar">Sugar</option>
+          <option value="Coins">Coins</option>
+        </select>
         {activeTab === "sell" && (
           <>
             <input
@@ -92,7 +150,7 @@ export const SwapModal = () => {
               value={sellAmount}
               onChange={(e) => setSellAmount(e.target.value)}
             />
-            <button type="button" onClick={() => setSellAmount(maxAmount)}>
+            <button type="button" onClick={() => handleMax()}>
               Max
             </button>
             <button type="button" onClick={handleSell}>
@@ -107,7 +165,7 @@ export const SwapModal = () => {
               value={buyAmount}
               onChange={(e) => setBuyAmount(e.target.value)}
             />
-            <button type="button" onClick={() => setBuyAmount(maxAmount)}>
+            <button type="button" onClick={() => handleMax()}>
               Max
             </button>
             <button type="button" onClick={handleBuy}>
@@ -122,7 +180,7 @@ export const SwapModal = () => {
               value={addAmount}
               onChange={(e) => setAddAmount(e.target.value)}
             />
-            <button type="button" onClick={() => setAddAmount(maxAmount)}>
+            <button type="button" onClick={() => handleMax()}>
               Max
             </button>
             <button type="button" onClick={handleAddLiquidity}>
@@ -137,10 +195,13 @@ export const SwapModal = () => {
               value={removeAmount}
               onChange={(e) => setRemoveAmount(e.target.value)}
             />
-            <button type="button" onClick={() => setRemoveAmount(maxAmount)}>
+            <button type="button" onClick={() => handleMax()}>
               Max
             </button>
-            <button type="button" onClick={handleRemoveLiquidity}>
+            <button
+              type="button"
+              onClick={handleRemoveLiquidity(BigInt(sellAmount.toString()))}
+            >
               Remove Liquidity
             </button>
           </>
@@ -152,7 +213,7 @@ export const SwapModal = () => {
               value={sellAmount}
               onChange={(e) => setSellAmount(e.target.value)}
             />
-            <button type="button" onClick={() => setSellAmount(maxAmount)}>
+            <button type="button" onClick={() => handleMax()}>
               Max
             </button>
             <input
@@ -160,9 +221,7 @@ export const SwapModal = () => {
               value={buyAmount}
               onChange={(e) => setBuyAmount(e.target.value)}
             />
-            <button type="button" onClick={() => setBuyAmount(maxAmount)}>
-              Max
-            </button>
+
             <button type="button" onClick={handleSwap}>
               Swap
             </button>
