@@ -31,7 +31,7 @@ contract ShipWreckSystem is System {
         ShipWreck.set(shipWreckId, playerId);
     }  
 
-    function shipWreckExists(int256 positionX, int256 positionY) private returns (bytes32) {
+    function shipWreckExists(int256 positionX, int256 positionY) public returns (bytes32) {
         // Make sure there is a wreck here
         bytes memory data = new bytes(64);
         assembly {
@@ -59,7 +59,7 @@ contract ShipWreckSystem is System {
         return playerId;
     }
 
-    function claimShipWreckIron(int256 positionX, int256 positionY, uint256 amount) public {
+    function claimShipWreckIron(int256 positionX, int256 positionY) public {
         bytes32 shipWreckId = shipWreckExists(positionX, positionY);
         bytes32 playerId = nearShipWreck(positionX, positionY);
 

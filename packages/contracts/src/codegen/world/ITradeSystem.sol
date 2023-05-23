@@ -12,13 +12,15 @@ interface ITradeSystem {
 
   function swap(uint256 amount, bytes32 portId, Items item0, Items item1) external returns (uint256);
 
-  function joinPool(bytes32 portId, uint256 poolAmountOut, uint256[5] calldata maxAmount) external returns (uint256);
+  function joinPoolSimple(bytes32 portId, uint256 poolAmountOut) external returns (uint256);
+
+  function joinPool(bytes32 portId, uint256 poolAmountOut, uint256[5] memory maxAmount) external returns (uint256);
 
   function exitPool(uint256 portId_, uint256 amount) external returns (uint256);
 
   function checkValidLocation(bytes32 shipId, bytes32 portId) external view returns (bool);
 
-  function quoteToken(uint256 amount, bytes32 portId, Items item0, Items item1) external view returns (uint256);
+  function quoteToken(uint256 amount, bytes32 portId, Items item0, Items item1) external returns (uint256);
 
-  function getBalance(Items item_, bytes32 entity) external view returns (uint256 balance);
+  function getBalance(Items item_, bytes32 entity) external returns (uint256 balance);
 }

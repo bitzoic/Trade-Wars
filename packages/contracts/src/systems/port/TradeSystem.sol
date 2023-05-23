@@ -48,6 +48,9 @@ contract TradeSystem is System {
         manufacture(portId)
         returns (uint256)
     {
+        if(Ports.lengthPort_name(portId) == 0) {
+            revert("Port does not exist yet");
+        }
         bytes32 shipId = keccak256(abi.encodePacked(_msgSender()));
         require(checkValidLocation(shipId, portId), "Not in the same chunk as port");
 
@@ -70,7 +73,17 @@ contract TradeSystem is System {
         return outputAmount;
     }
 
-    function joinPool(bytes32 portId, uint256 poolAmountOut, uint256[5] calldata maxAmount)
+    function joinPoolSimple(bytes32 portId, uint256 poolAmountOut) external returns (uint256) {
+        uint256[5] memory maxAmount;
+        maxAmount[0] = type(uint256).max;
+        maxAmount[1] = type(uint256).max;
+        maxAmount[2] = type(uint256).max;
+        maxAmount[3] = type(uint256).max;
+        maxAmount[4] = type(uint256).max;
+        return joinPool(portId, poolAmountOut, maxAmount);
+    }
+
+    function joinPool(bytes32 portId, uint256 poolAmountOut, uint256[5] memory maxAmount)
         public
         manufacture(portId)
         returns (uint256)
@@ -219,7 +232,7 @@ contract TradeSystem is System {
         // emit an event here?
     }
 
-    function quoteToken(uint256 amount, bytes32 portId, Items item0, Items item1) public view returns (uint256) {
+    function quoteToken(uint256 amount, bytes32 portId, Items item0, Items item1) public returns (uint256) {
         uint256 balanceA = getBalance(item0, portId);
         uint256 balanceB = getBalance(item1, portId);
         uint256 weightA = getNormalizedWeight(item1, portId);
@@ -279,8 +292,11 @@ contract TradeSystem is System {
         if (weight > CargoSpace.getMax_cargo(shipId)) revert("Not enough cargo space");
     }
 
-    function getBalance(Items item_, bytes32 entity) public view returns (uint256 balance) {
+    function getBalance(Items item_, bytes32 entity) public returns (uint256 balance) {
         uint256 item = uint256(item_);
+        if (Ports.lengthPort_name(entity) == 0) {
+            IWorld(_world()).manufacture(entity);
+        }
         if (item == 0) {
             balance = Coins.get(entity);
         } else if (item == 1) {

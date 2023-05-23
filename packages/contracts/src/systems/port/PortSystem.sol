@@ -10,8 +10,8 @@ contract PortSystem is System {
         int256 xCoord,
         int256 yCoord,
         string calldata name,
-        uint256[5] calldata amounts,
-        int256[5] calldata speeds
+        uint256[5] memory amounts,
+        int256[5] memory speeds
     ) public {
         bytes32 portId = keccak256(abi.encodePacked(xCoord, yCoord));
         Ports.set(portId, _msgSender(), name, block.timestamp,speeds);
@@ -25,7 +25,16 @@ contract PortSystem is System {
         IWorld(_world()).joinPool(portId, 100, amounts);
     }
 
-    function initPort(int256 xCoord, int256 yCoord, uint256[5] calldata amounts, int256[5] calldata speeds) public {
+    // Call this function again to update port rng values
+    function simpleInitPort(int256 xCoord, int256 yCoord) external {
+        uint256[5] memory amounts;
+        int256[5] memory speeds;
+        for (uint256 i = 0; i < 5; i++) {
+            amounts[i] = uint256(keccak256(abi.encodePacked(block.timestamp, i))) % 8000;
+            int256 randomValue = int256(uint256(keccak256(abi.encodePacked(block.timestamp, i)))) % 20; // param could be too high
+            speeds[i] = randomValue < 5000 ? randomValue : -randomValue;
+        }
+        // add a check to make sure this is a port tile
         this.initPort(xCoord, yCoord, "Port", amounts, speeds);
     }
 

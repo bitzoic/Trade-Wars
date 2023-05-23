@@ -8,11 +8,11 @@ interface IPortSystem {
     int256 xCoord,
     int256 yCoord,
     string calldata name,
-    uint256[5] calldata amounts,
-    int256[5] calldata speeds
+    uint256[5] memory amounts,
+    int256[5] memory speeds
   ) external;
 
-  function initPort(int256 xCoord, int256 yCoord, uint256[5] calldata amounts, int256[5] calldata speeds) external;
+  function simpleInitPort(int256 xCoord, int256 yCoord) external;
 
   function manufacture(bytes32 portId) external;
 
