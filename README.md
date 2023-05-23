@@ -8,7 +8,7 @@
 
 This is a on-chain game for the [EthGlobal Autonomous Worlds](https://ethglobal.com/events/autonomous) Hackathon.
 
-**Contributors:** @bitzoic @mergd @CometShock
+**Contributors:** [@bitzoic](https://github.com/bitzoic) [@mergd](https://github.com/mergd) [@CometShock](https://github.com/CometShock)
 
 ## Overview 
 
