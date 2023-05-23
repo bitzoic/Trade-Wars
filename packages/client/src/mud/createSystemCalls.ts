@@ -140,6 +140,7 @@ export function createSystemCalls(
         break;
       default:
         terrainType = -1;
+        console.log(terrain);
         break;
     }
 
@@ -158,29 +159,32 @@ export function createSystemCalls(
     return objectType;
   };
 
-  const getMap = async (chunk_1: number, chunk_2: number) => {
-    const [x1, y1] = [chunk_1 % 256, Math.floor(chunk_1 / 256)];
-    const [x2, y2] = [chunk_2 % 256, Math.floor(chunk_2 / 256)];
+  const getMap = async (
+    chunk_1x: number,
+    chunk_1y: number,
+    chunk_2x: number,
+    chunk_2y: number
+  ) => {
+    const [x1, y1] = [chunk_1x % 256, Math.floor(chunk_1y / 256)];
+    const [x2, y2] = [chunk_2x % 256, Math.floor(chunk_2y / 256)];
     const terrainMatrix = [];
 
     for (let y = y1; y <= y2; y++) {
       const row = [];
       for (let x = x1; x <= x2; x++) {
-        // const tx = await worldSend("getTerrain", [x, y]);
-        // await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
         const terrain = (
           await worldContract.callStatic.getTerrain(x, y)
-        ).toString();
+        ).toHexString();
         const object = (
           await worldContract.callStatic.getObject(x, y)
-        ).toString();
+        ).toHexString();
         const terrainObject =
           getTerrainType(terrain) * 10 + getObjectType(object);
         row.push(terrainObject);
       }
       terrainMatrix.push(row);
     }
-
+    console.log(terrainMatrix);
     return terrainMatrix;
   };
 

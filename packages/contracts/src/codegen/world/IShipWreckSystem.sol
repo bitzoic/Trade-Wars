@@ -16,7 +16,7 @@ interface IShipWreckSystem {
 
   function shipWreckExists(int256 positionX, int256 positionY) external returns (bytes32);
 
-  function claimShipWreckIron(int256 positionX, int256 positionY) external;
+  function claimShipWreckIron(int256 positionX, int256 positionY, uint256 amount) external;
 
   function claimShipWreckSalt(int256 positionX, int256 positionY, uint256 amount) external;
 

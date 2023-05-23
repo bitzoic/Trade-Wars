@@ -13,4 +13,3 @@ uint256 constant MOUNTAIN = uint256(keccak256("terrain.Mountain"));
 uint256 constant SHALLOW_OCEAN = uint256(keccak256("terrain.Shallow_Water"));
 uint256 constant DEEP_OCEAN = uint256(keccak256("terrain.Shallow_Water"));
 int256 constant TERRAIN_SCALE = 400; // "higher scale = wider oceans"
-

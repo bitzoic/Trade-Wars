@@ -1,29 +1,84 @@
-import { useComponentValue } from "@latticexyz/react";
+// import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
+import { useState } from "react";
+import "./App.css";
+
+import { SwapModal } from "./components/SwapModal";
 
 export const App = () => {
   const {
-    components: { Counter },
-    systemCalls: { increment },
+    systemCalls: { getMap, move, attack, shipWreckExists, getShipResources },
     network: { singletonEntity },
   } = useMUD();
 
-  const counter = useComponentValue(Counter, singletonEntity);
-
+  const [x1, setX1] = useState("0");
+  const [y1, setY1] = useState("0");
+  const [x2, setX2] = useState("10");
+  const [y2, setY2] = useState("4");
+  const [map, setMap] = useState<number[][]>([]);
+  const handleGetMap = async () => {
+    const result = await getMap(Number(x1), Number(y1), Number(x2), Number(y2));
+    setMap(result);
+  };
   return (
     <>
       <div>
-        Counter: <span>{counter?.value ?? "??"}</span>
+        <label>
+          X1:
+          <input
+            type="text"
+            value={x1}
+            onChange={(e) => setX1(e.target.value)}
+          />
+        </label>
+        <label>
+          Y1:
+          <input
+            type="text"
+            value={y1}
+            onChange={(e) => setY1(e.target.value)}
+          />
+        </label>
+        <label>
+          X2:
+          <input
+            type="text"
+            value={x2}
+            onChange={(e) => setX2(e.target.value)}
+          />
+        </label>
+        <label>
+          Y2:
+          <input
+            type="text"
+            value={y2}
+            onChange={(e) => setY2(e.target.value)}
+          />
+        </label>
+        <button type="button" onClick={handleGetMap}>
+          Show Map
+        </button>
       </div>
-      <button
-        type="button"
-        onClick={async (event) => {
-          event.preventDefault();
-          console.log("new counter value:", await increment());
-        }}
-      >
-        Increment
-      </button>
+      <div className="map-container">
+        {map.map((row, rowIndex) => (
+          <div key={rowIndex} className="map-row">
+            {row.map((value, colIndex) => (
+              <span
+                key={`${rowIndex}-${colIndex}`}
+                style={{
+                  backgroundColor: `rgb(${value * 50}, ${value * 50}, ${
+                    value * 50
+                  })`,
+                  padding: "0.5rem",
+                  margin: "0.1rem",
+                }}
+              >
+                {value}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
     </>
   );
 };

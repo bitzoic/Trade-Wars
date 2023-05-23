@@ -1,0 +1,21 @@
+@import "nes-ui-react";
+
+.map-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.map-row {
+  display: flex;
+}
+
+.map-cell {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  margin: 0.1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  color: white;
+}

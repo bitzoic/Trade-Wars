@@ -114,15 +114,15 @@ export default mudConfig({
       },
       schema: {
         port_owner: "address",
-        port_name: "string",
         last_updated: "uint256",
         port_speeds: "int256[5]",
+        port_name: "string",
       },
     },
     ShipWreck: {
-        schema: {
-            playerId: "bytes32"
-        }
-    }
+      schema: {
+        playerId: "bytes32",
+      },
+    },
   },
 });

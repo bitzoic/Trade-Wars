@@ -59,7 +59,7 @@ contract ShipWreckSystem is System {
         return playerId;
     }
 
-    function claimShipWreckIron(int256 positionX, int256 positionY) public {
+    function claimShipWreckIron(int256 positionX, int256 positionY, uint256 amount) public {
         bytes32 shipWreckId = shipWreckExists(positionX, positionY);
         bytes32 playerId = nearShipWreck(positionX, positionY);
 

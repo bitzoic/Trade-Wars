@@ -9,12 +9,11 @@ contract PortSystem is System {
     function initPort(
         int256 xCoord,
         int256 yCoord,
-        string calldata name,
         uint256[5] memory amounts,
         int256[5] memory speeds
     ) public {
         bytes32 portId = keccak256(abi.encodePacked(xCoord, yCoord));
-        Ports.set(portId, _msgSender(), name, block.timestamp,speeds);
+        Ports.set(portId, _msgSender(), block.timestamp, speeds, "Port");
         Position.setPos_x(portId, xCoord);
         Position.setPos_y(portId, yCoord);
         Coins.set(portId, amounts[0]);
@@ -35,7 +34,7 @@ contract PortSystem is System {
             speeds[i] = randomValue < 5000 ? randomValue : -randomValue;
         }
         // add a check to make sure this is a port tile
-        this.initPort(xCoord, yCoord, "Port", amounts, speeds);
+        this.initPort(xCoord, yCoord, amounts, speeds);
     }
 
     function manufacture(bytes32 portId) public {

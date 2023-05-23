@@ -250,9 +250,9 @@ export function defineContractComponents(world: World) {
         world,
         {
           port_owner: RecsType.String,
-          port_name: RecsType.String,
           last_updated: RecsType.BigInt,
           port_speeds: RecsType.BigIntArray,
+          port_name: RecsType.String,
         },
         {
           metadata: {
