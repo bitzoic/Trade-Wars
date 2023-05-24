@@ -64,7 +64,7 @@ As we have limited our scope to ensure completion by the deadline for the hackat
 - **Ownership of Ports**: To further expand on the autonomous world, we would like to add the ownership of ports, where users themselves may own a port, build its defenses, and manage its town.
 - **Frontend with improved assets, UI, UX**
 - **Trading Overlay**: Frontend Uniswap-like trading overlay on selected port, and nearby ports have a small overlay that autopopulates the live expected profitability of the trade.
-- Implementing open_ports: live_player Ratio (or Curve): Adjust live ports based on estimated live players, mitigating risk of hyperinflationary economy (i.e. preventing 10 players with 1000 open ports).
-  - Proposed basic port:player ratio: 8:5
-  - Proposed advanced curve: open_ports = 2*live_players^0.87
+- **Implementing open_ports**: live_player Ratio (or Curve): Adjust live ports based on estimated live players, mitigating risk of hyperinflationary economy (i.e. preventing 10 players with 1000 open ports).
+  - **Proposed basic port:player ratio**: 8:5
+  - **Proposed advanced curve**: open_ports = 2*live_players^0.87
 - **Game Parameter Governance**: gov modifying game parameters to encourage evolving play & strategy
