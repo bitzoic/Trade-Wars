@@ -29,6 +29,7 @@
     "nes-ui-react": "^0.2.15",
     "react-toastify": "^9.1.3",
     "tailwind-merge": "^1.12.0",
-    "tailwindcss": "^3.3.2"
+    "tailwindcss": "^3.3.2",
+    "vercel": "^30.0.0"
   }
 }
