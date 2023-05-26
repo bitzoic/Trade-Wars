@@ -29,10 +29,10 @@ library ObjectLibrary {
         int256 currentChunkX = positionX / CHUNK_SIZE;
         int256 currentChunkY = positionY / CHUNK_SIZE;
         // Perlin noise on this chunk
-        int128 perlinNoise = Perlin.noise2d(currentChunkX, currentChunkY, OBJECT_SCALE, 64);
+        int128 perlinNoise = Perlin.noise2d(currentChunkX, currentChunkY, OBJECT_SCALE, 5);
 
         // 10% chance of reef
-        if (perlinNoise >= _0_90) {
+        if (perlinNoise >= 17) {
             return REEF;
         } else {
             return 0;
@@ -44,10 +44,10 @@ library ObjectLibrary {
         int256 currentChunkX = positionX / CHUNK_SIZE;
         int256 currentChunkY = positionY / CHUNK_SIZE;
         // Perlin noise on this chunk
-        int128 perlinNoise = Perlin.noise2d(currentChunkX, currentChunkY, OBJECT_SCALE, 64);
+        int128 perlinNoise = Perlin.noise2d(currentChunkX, currentChunkY, OBJECT_SCALE, 5);
 
-        // 20% chance of port
-        if (perlinNoise >= _0_80) {
+        // 10% chance of port
+        if (perlinNoise >= 17) {
             return PORT;
         } else {
             return 0;
