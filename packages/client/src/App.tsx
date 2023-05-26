@@ -1,6 +1,6 @@
 // import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   Row,
@@ -8,16 +8,20 @@ import {
   Br,
   IconButton,
   PixelIcon,
+  Container,
   Modal,
   Header,
   Spacer,
   ModalContent,
+  Button,
   Footer,
 } from "nes-ui-react";
 
 import "./App.css";
 
 import { SwapModal } from "./components/SwapModal";
+
+import { IntroductionModal } from "./components/IntroductionModal";
 
 export const App = () => {
   const {
@@ -31,6 +35,11 @@ export const App = () => {
   const [y2, setY2] = useState("4");
   const [map, setMap] = useState<number[][]>([]);
   const [demoDialogOpen, setDemoDialogOpen] = useState(false);
+  const [showIntroductionModal, setShowIntroductionModal] = useState(false);
+
+  useEffect(() => {
+    setShowIntroductionModal(true);
+  }, []);
 
   const handleGetMap = async () => {
     const result = await getMap(Number(x1), Number(y1), Number(x2), Number(y2));
@@ -38,8 +47,15 @@ export const App = () => {
   };
   return (
     <>
+      <Modal
+        open={showIntroductionModal}
+        onClose={() => setShowIntroductionModal(false)}
+      >
+        <IntroductionModal />
+      </Modal>
+
       <div>
-        <label>
+        {/* <label>
           X1:
           <input
             type="text"
@@ -70,12 +86,12 @@ export const App = () => {
             value={y2}
             onChange={(e) => setY2(e.target.value)}
           />
-        </label>
-        <button type="button" onClick={handleGetMap}>
+        </label> */}
+        <Button type="button" onClick={handleGetMap}>
           Show Map
-        </button>
+        </Button>
       </div>
-      <div className="map-container">
+      <Container align="center" title="Game Map">
         {map.map((row, rowIndex) => (
           <div key={rowIndex} className="map-row">
             {row.map((value, colIndex) => (
@@ -91,16 +107,19 @@ export const App = () => {
             ))}
           </div>
         ))}
+      </Container>
+      <div>
         <IconButton
           borderInverted
           color="primary"
           onClick={() => setDemoDialogOpen(true)}
+          style={{ position: "fixed", bottom: "20px", right: "20px" }}
         >
-          <Text size="small">Open Modal</Text>
+          <Text size="small">Swap</Text>
           <PixelIcon name="pixelicon-checkmark" size="small" />
         </IconButton>
         <Modal open={demoDialogOpen} onClose={() => setDemoDialogOpen(false)}>
-          <SwapModal currentPort={"e"} />
+          <SwapModal currentPort="e" />
         </Modal>
       </div>
     </>
